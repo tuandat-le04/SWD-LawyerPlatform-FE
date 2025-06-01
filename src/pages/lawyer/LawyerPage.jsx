@@ -2,40 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-
-interface Lawyer {
-  id: number
-  name: string
-  title: string
-  specialties: string[]
-  experience: string
-  rating: number
-  reviews: number
-  location: string
-  education: string
-  languages: string[]
-  consultationFee: string
-  avatar: string
-  description: string
-  successRate: string
-  cases: number
-  verified: boolean
-  online: boolean
-}
-
-interface Testimonial {
-  id: number
-  name: string
-  role: string
-  content: string
-  rating: number
-  avatar: string
-}
-
-interface FAQ {
-  question: string
-  answer: string
-}
+import { lawyerService } from "../../services/lawyerService"
 
 // Mock data for lawyers
 const lawyers = [
@@ -209,52 +176,73 @@ const faqs = [
 ]
 
 export default function LawyersPage() {
-  const [searchTerm, setSearchTerm] = useState<string>("")
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("")
-  const [selectedLocation, setSelectedLocation] = useState<string>("")
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
-  const [currentTestimonial, setCurrentTestimonial] = useState<number>(0)
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [isVisible, setIsVisible] = useState<boolean>(false)
-  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedSpecialty, setSelectedSpecialty] = useState("")
+  const [selectedLocation, setSelectedLocation] = useState("")
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [openFaq, setOpenFaq] = useState(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const [lawyers, setLawyers] = useState([])
+  const [testimonials, setTestimonials] = useState([])
+  const [faqs, setFaqs] = useState([])
+  const [specialties, setSpecialties] = useState([])
+  const [locations, setLocations] = useState([])
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
-  const handleLoginClick = () => {
-    navigate('/login');
-  }
   useEffect(() => {
-    setIsVisible(true)
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
-    }, 5000)
-    return () => clearInterval(interval)
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const [lawyersData, testimonialsData, faqsData, specialtiesData, locationsData] = await Promise.all([
+          lawyerService.getAllLawyers(),
+          lawyerService.getAllTestimonials(),
+          lawyerService.getAllFaqs(),
+          lawyerService.getAllSpecialties(),
+          lawyerService.getAllLocations()
+        ])
+        
+        setLawyers(lawyersData)
+        setTestimonials(testimonialsData)
+        setFaqs(faqsData)
+        setSpecialties(specialtiesData)
+        setLocations(locationsData)
+        setIsVisible(true)
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
   }, [])
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (testimonials.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+      }, 5000)
+      return () => clearInterval(interval)
+    }
+  }, [testimonials])
+
+  const handleLoginClick = () => {
+    navigate('/login')
+  }
+
+  const handleSearchChange = (e) => {
     setSearchTerm(e.target.value)
   }
 
-  const handleSpecialtyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSpecialtyChange = (e) => {
     setSelectedSpecialty(e.target.value)
   }
 
-  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleLocationChange = (e) => {
     setSelectedLocation(e.target.value)
   }
-
-  const specialties = [
-    "Luật Dân sự",
-    "Luật Hình sự",
-    "Luật Lao động",
-    "Luật Doanh nghiệp",
-    "Luật Bất động sản",
-    "Luật Hôn nhân & Gia đình",
-    "Luật Sở hữu trí tuệ",
-    "Luật Đầu tư",
-    "Luật Y tế",
-    "Luật Thuế",
-  ]
-
-  const locations = ["TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Cần Thơ", "Hải Phòng"]
 
   const filteredLawyers = lawyers.filter((lawyer) => {
     const matchesSearch =
@@ -265,6 +253,17 @@ export default function LawyersPage() {
 
     return matchesSearch && matchesSpecialty && matchesLocation
   })
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-amber-500 mx-auto"></div>
+          <p className="text-white mt-4">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 relative overflow-hidden">
