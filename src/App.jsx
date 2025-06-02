@@ -1,19 +1,28 @@
 import React from 'react'
-import Home from './pages/Home'
 import './styles/index.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Login from './pages/Login'
-import LawyerPage from './pages/lawyer/LawyerPage'
+// Customer
+import CustomerLayout from './components/layouts/CustomerLayout'
+import Home from './pages/customer/Home'
+import Login from './pages/customer/Login'
+import LawyerPage from './pages/customer/LawyerPage'
+import ContactPage from './pages/customer/Contact'
+
 
 export default function App() {
     return (
         <Router>
             <Routes>
+                {/* Customer */}
+                <Route element={<CustomerLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path='/login' element={<Login />} />
-                
-                {/* Lawyer Introduction Page */}
                 <Route path='/lawyer' element={<LawyerPage />} />
+                <Route path='/contact' element={<ContactPage />} />
+                </Route>
+                
+               
+               
             </Routes>
         </Router>
     )
