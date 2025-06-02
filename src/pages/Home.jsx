@@ -30,7 +30,7 @@ export default function Home() {
                         {/* Desktop Navigation */}
                         <nav className="hidden md:flex items-center space-x-8">
                             <a href="#home" className="text-white hover:text-amber-400 transition-colors font-medium">TRANG CHỦ</a>
-                            <a href="#about" className="text-gray-400 hover:text-amber-400 transition-colors">ĐỘI NGŨ</a>
+                            <a onClick={() => navigate('/lawyer')} className="text-gray-400 hover:text-amber-400 transition-colors">ĐỘI NGŨ</a>
                             <a href="#services" className="text-gray-400 hover:text-amber-400 transition-colors">DỊCH VỤ</a>
                             <a href="#contact" className="text-gray-400 hover:text-amber-400 transition-colors">LIÊN HỆ</a>
 
@@ -53,7 +53,7 @@ export default function Home() {
                         <div className="md:hidden border-t border-gray-800 py-4">
                             <div className="flex flex-col space-y-4">
                                 <a href="#home" className="text-white hover:text-amber-400">HOME</a>
-                                <a href="#about" className="text-gray-400 hover:text-amber-400">ABOUT</a>
+                                <a onClick={() => navigate('/lawyer')} className="text-gray-400 hover:text-amber-400">ĐỘI NGŨ</a>
                                 <a href="#case" className="text-gray-400 hover:text-amber-400">CASE</a>
                                 <a href="#services" className="text-gray-400 hover:text-amber-400">SERVICES</a>
                                 <a href="#contact" className="text-gray-400 hover:text-amber-400">CONTACT US</a>
