@@ -13,59 +13,7 @@ export default function Home() {
     }
     return (
         <div className="min-h-screen bg-gray-900">
-            {/* Header */}
-            <header className="bg-gray-900/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gray-800">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-4">
-                        <div className="flex items-center space-x-3">
-                            <div className="bg-gradient-to-r from-amber-500 to-yellow-600 p-2 rounded-lg">
-                                <Scale className="h-8 w-8 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-white">BASICO</h1>
-                                <p className="text-sm text-gray-400">DỊCH VỤ PHÁP LÝ CHUYÊN NGHIỆP</p>
-                            </div>
-                        </div>
-
-                        {/* Desktop Navigation */}
-                        <nav className="hidden md:flex items-center space-x-8">
-                            <a href="#home" className="text-white hover:text-amber-400 transition-colors font-medium">TRANG CHỦ</a>
-                            <a onClick={() => navigate('/lawyer')} className="text-gray-400 hover:text-amber-400 transition-colors">ĐỘI NGŨ</a>
-                            <a href="#services" className="text-gray-400 hover:text-amber-400 transition-colors">DỊCH VỤ</a>
-                            <a href="#contact" className="text-gray-400 hover:text-amber-400 transition-colors">LIÊN HỆ</a>
-
-                            <button onClick={handleLoginClick} className="bg-amber-500 text-gray-900 px-6 py-2 rounded-lg hover:bg-amber-600 transition-colors font-semibold">
-                                Đăng nhập
-                            </button>
-                        </nav>
-
-                        {/* Mobile menu button */}
-                        <button
-                            onClick={toggleMenu}
-                            className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800"
-                        >
-                            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                        </button>
-                    </div>
-
-                    {/* Mobile Navigation */}
-                    {isMenuOpen && (
-                        <div className="md:hidden border-t border-gray-800 py-4">
-                            <div className="flex flex-col space-y-4">
-                                <a href="#home" className="text-white hover:text-amber-400">HOME</a>
-                                <a onClick={() => navigate('/lawyer')} className="text-gray-400 hover:text-amber-400">ĐỘI NGŨ</a>
-                                <a href="#case" className="text-gray-400 hover:text-amber-400">CASE</a>
-                                <a href="#services" className="text-gray-400 hover:text-amber-400">SERVICES</a>
-                                <a href="#contact" className="text-gray-400 hover:text-amber-400">CONTACT US</a>
-                                <button className="bg-amber-500 text-gray-900 px-6 py-2 rounded-lg hover:bg-amber-600 w-fit">
-                                    Đăng nhập
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </header>
-
+           
             {/* Hero Section */}
             <section
                 className="relative py-32 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center bg-cover bg-center"
@@ -284,24 +232,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Footer */}
-            <footer className="bg-gray-900 text-white py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
-                <div className="max-w-7xl mx-auto border-t border-gray-800 pt-8">
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                        <p className="text-gray-400">Copyright © 2025 BASICO</p>
-                        <div className="flex items-center space-x-6 mt-4 md:mt-0">
-                            <div className="flex items-center text-gray-400">
-                                <Phone className="h-5 w-5 mr-2" />
-                                <span>+84 686 868 686</span>
-                            </div>
-                            <div className="flex items-center text-gray-400">
-                                <Mail className="h-5 w-5 mr-2" />
-                                <span>contactforwork@basico.vn</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            
         </div>
     );
 }
