@@ -25,6 +25,10 @@ export default function LoginPage() {
         navigate('/');
     };
 
+    const handleRegisterClick = () => {
+        navigate('/register');
+    }
+
     const handleSubmit = async () => {
         setIsLoading(true);
 
@@ -173,7 +177,7 @@ export default function LoginPage() {
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-400">
                             Chưa có tài khoản?{' '}
-                            <a href="#" className="font-medium text-orange-300 hover:text-orange-200 hover:underline">
+                            <a onClick={handleRegisterClick} href="#" className="font-medium text-orange-300 hover:text-orange-200 hover:underline">
                                 Đăng ký ngay
                             </a>
                         </p>
