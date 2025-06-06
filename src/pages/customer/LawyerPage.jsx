@@ -319,7 +319,7 @@ export default function LawyersPage() {
           <div
             className={`transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-amber-200 bg-clip-text text-transparent">
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 h-20 bg-gradient-to-r from-white to-amber-200 bg-clip-text text-transparent">
               Đội Ngũ Luật Sư Chuyên Nghiệp
             </h2>
             <p className="text-xl md:text-2xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed">
@@ -460,12 +460,12 @@ export default function LawyersPage() {
             {filteredLawyers.map((lawyer, index) => (
               <div
                 key={lawyer.id}
-                className="group relative bg-gray-800 border border-gray-700 rounded-3xl shadow-2xl hover:shadow-amber-500/25 transition-all duration-500 transform hover:-translate-y-4 hover:scale-105 overflow-hidden"
+                className="group relative bg-gray-800 border border-gray-700 rounded-3xl shadow-2xl hover:shadow-amber-500/25 transition-all duration-500 transform hover:-translate-y-1 hover:scale-10 overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Online Status */}
                 {lawyer.online && (
-                  <div className="absolute top-4 right-4 z-10">
+                  <div className="absolute top-2 right-4 z-10">
                     <div className="flex items-center bg-green-500/20 backdrop-blur-sm border border-green-500/30 rounded-full px-3 py-1">
                       <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
                       <span className="text-green-400 text-xs font-medium">Online</span>
