@@ -43,12 +43,12 @@ export default function LoginPage() {
         <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center px-4 sm:px-6 lg:px-8">
             <div className="relative max-w-md w-full">
                 {/* Back to Home */}
-                <div className="mb-8">
+                {/* <div className="mb-8">
                     <button onClick={handleBackClick} className="flex items-center text-gray-400 hover:text-orange-300 transition-colors group">
                         <ArrowLeft className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
                         <span>Quay về trang chủ</span>
                     </button>
-                </div>
+                </div> */}
 
                 {/* Login Card */}
                 <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700 p-8">
