@@ -9,6 +9,10 @@ export default function CustomerHeader() {
     navigate('/login')
   }
 
+  const handleLogoClick = () => {
+    navigate('/')
+  }
+
   return (
     <header className="relative bg-gray-900/95 backdrop-blur-sm shadow-2xl sticky top-0 z-50 border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +31,7 @@ export default function CustomerHeader() {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white group-hover:text-amber-400 transition-colors duration-300">
+              <h1 onClick={handleLogoClick} className="text-2xl font-bold text-white group-hover:text-amber-400 transition-colors duration-300">
                 BASICO
               </h1>
               <p className="text-sm text-gray-400 group-hover:text-amber-300 transition-colors duration-300">
