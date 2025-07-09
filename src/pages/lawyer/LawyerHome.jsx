@@ -33,7 +33,7 @@ const mockData = {
         {
             id: 1,
             clientName: "Nguyễn Văn An",
-            clientAvatar: "/placeholder.svg?height=40&width=40",
+            clientAvatar: "../public/images/avatar.png",
             type: "Tư vấn trực tuyến",
             date: "2025-01-17",
             time: "14:00",
@@ -45,7 +45,7 @@ const mockData = {
         {
             id: 2,
             clientName: "Trần Thị Bình",
-            clientAvatar: "/placeholder.svg?height=40&width=40",
+            clientAvatar: "../public/images/avatar.png",
             type: "Gặp trực tiếp",
             date: "2025-01-17",
             time: "16:30",
@@ -57,7 +57,7 @@ const mockData = {
         {
             id: 3,
             clientName: "Lê Minh Cường",
-            clientAvatar: "/placeholder.svg?height=40&width=40",
+            clientAvatar: "../public/images/avatar.png",
             type: "Tư vấn điện thoại",
             date: "2025-01-18",
             time: "09:00",
@@ -69,7 +69,7 @@ const mockData = {
         {
             id: 4,
             clientName: "Phạm Thị Dung",
-            clientAvatar: "/placeholder.svg?height=40&width=40",
+            clientAvatar: "../public/images/avatar.png",
             type: "Tư vấn trực tuyến",
             date: "2025-01-18",
             time: "15:00",
@@ -79,32 +79,7 @@ const mockData = {
             fee: "500,000 VNĐ",
         },
     ],
-    recentMessages: [
-        {
-            id: 1,
-            clientName: "Nguyễn Văn An",
-            clientAvatar: "/placeholder.svg?height=32&width=32",
-            message: "Xin chào luật sư, tôi cần tư vấn thêm về vụ việc hôm qua...",
-            time: "10 phút trước",
-            unread: true,
-        },
-        {
-            id: 2,
-            clientName: "Trần Thị Bình",
-            clientAvatar: "/placeholder.svg?height=32&width=32",
-            message: "Cảm ơn luật sư đã tư vấn. Tôi sẽ chuẩn bị các giấy tờ như hướng dẫn.",
-            time: "2 giờ trước",
-            unread: false,
-        },
-        {
-            id: 3,
-            clientName: "Lê Minh Cường",
-            clientAvatar: "/placeholder.svg?height=32&width=32",
-            message: "Luật sư có thể dời lịch hẹn ngày mai được không ạ?",
-            time: "5 giờ trước",
-            unread: true,
-        },
-    ],
+
     notifications: [
         {
             id: 1,
@@ -147,7 +122,6 @@ export default function LawyerHome() {
     const [currentTime, setCurrentTime] = useState(new Date())
     const [selectedTab, setSelectedTab] = useState("overview")
     const [notifications, setNotifications] = useState(mockData.notifications)
-    const [showNotifications, setShowNotifications] = useState(false)
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -235,64 +209,10 @@ export default function LawyerHome() {
                                 />
                             </div>
 
-                            {/* Notifications */}
-                            <div className="relative">
-                                <button
-                                    onClick={() => setShowNotifications(!showNotifications)}
-                                    className="relative p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-                                >
-                                    <Bell className="h-5 w-5" />
-                                    {unreadNotifications > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                                            {unreadNotifications}
-                                        </span>
-                                    )}
-                                </button>
-
-                                {/* Notifications Dropdown */}
-                                {showNotifications && (
-                                    <div className="absolute right-0 mt-2 w-80 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl z-50">
-                                        <div className="p-4 border-b border-gray-700">
-                                            <h3 className="text-lg font-semibold text-white">Thông báo</h3>
-                                        </div>
-                                        <div className="max-h-96 overflow-y-auto">
-                                            {notifications.map((notification) => (
-                                                <div
-                                                    key={notification.id}
-                                                    className={`p-4 border-b border-gray-700 hover:bg-gray-700/50 transition-colors ${!notification.read ? "bg-amber-500/5" : ""
-                                                        }`}
-                                                >
-                                                    <div className="flex items-start space-x-3">
-                                                        <div
-                                                            className={`p-2 rounded-lg ${notification.type === "appointment"
-                                                                ? "bg-blue-500/20 text-blue-400"
-                                                                : notification.type === "payment"
-                                                                    ? "bg-green-500/20 text-green-400"
-                                                                    : "bg-amber-500/20 text-amber-400"
-                                                                }`}
-                                                        >
-                                                            {notification.type === "appointment" && <Calendar className="h-4 w-4" />}
-                                                            {notification.type === "payment" && <DollarSign className="h-4 w-4" />}
-                                                            {notification.type === "review" && <Star className="h-4 w-4" />}
-                                                        </div>
-                                                        <div className="flex-1">
-                                                            <h4 className="text-sm font-medium text-white">{notification.title}</h4>
-                                                            <p className="text-sm text-gray-400 mt-1">{notification.message}</p>
-                                                            <p className="text-xs text-gray-500 mt-2">{notification.time}</p>
-                                                        </div>
-                                                        {!notification.read && <div className="w-2 h-2 bg-amber-500 rounded-full"></div>}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
                             {/* Profile */}
                             <div className="flex items-center space-x-3">
                                 <img
-                                    src="/placeholder.svg?height=32&width=32"
+                                    src="../public/images/avatar.png"
                                     alt="Profile"
                                     className="w-8 h-8 rounded-full border-2 border-amber-500"
                                 />
@@ -315,8 +235,6 @@ export default function LawyerHome() {
                             { id: "overview", label: "Tổng quan", icon: TrendingUp, path: "/lawyer/home" },
                             { id: "appointments", label: "Lịch hẹn", icon: Calendar, path: "/lawyer/appointments" },
                             { id: "clients", label: "Khách hàng", icon: Users, path: "/lawyer/clients" },
-                            { id: "messages", label: "Tin nhắn", icon: MessageCircle, path: "/lawyer/messages" },
-                            { id: "documents", label: "Tài liệu", icon: FileText, path: "/lawyer/documents" },
                             { id: "settings", label: "Cài đặt", icon: Settings, path: "/lawyer/settings" },
                         ].map((item) => (
                             <button
@@ -504,61 +422,6 @@ export default function LawyerHome() {
                                         <Users className="h-5 w-5" />
                                         <span className="font-medium">Quản lý khách hàng</span>
                                     </button>
-                                    <button
-                                        onClick={() => handleNavigation("/lawyer/messages")}
-                                        className="w-full flex items-center space-x-3 p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                                    >
-                                        <MessageCircle className="h-5 w-5" />
-                                        <span className="font-medium">Tin nhắn</span>
-                                    </button>
-                                    <button className="w-full flex items-center space-x-3 p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
-                                        <FileText className="h-5 w-5" />
-                                        <span className="font-medium">Tạo tài liệu</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Recent Messages */}
-                            <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-lg font-bold text-white">Tin nhắn gần đây</h3>
-                                    <button
-                                        onClick={() => handleNavigation("/lawyer/messages")}
-                                        className="text-amber-400 hover:text-amber-300 text-sm font-medium"
-                                    >
-                                        Xem tất cả
-                                    </button>
-                                </div>
-
-                                <div className="space-y-4">
-                                    {mockData.recentMessages.map((message) => (
-                                        <div
-                                            key={message.id}
-                                            className="flex items-start space-x-3 p-3 hover:bg-gray-700/50 rounded-lg transition-colors cursor-pointer"
-                                        >
-                                            <div className="relative">
-                                                <img
-                                                    src={message.clientAvatar || "/placeholder.svg"}
-                                                    alt={message.clientName}
-                                                    className="w-8 h-8 rounded-full"
-                                                />
-                                                {message.unread && (
-                                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full"></div>
-                                                )}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between">
-                                                    <h4 className={`text-sm font-medium ${message.unread ? "text-white" : "text-gray-300"}`}>
-                                                        {message.clientName}
-                                                    </h4>
-                                                    <span className="text-xs text-gray-500">{message.time}</span>
-                                                </div>
-                                                <p className={`text-sm mt-1 truncate ${message.unread ? "text-gray-300" : "text-gray-400"}`}>
-                                                    {message.message}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
                                 </div>
                             </div>
 

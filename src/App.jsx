@@ -26,6 +26,8 @@ import ManagePackageService from './pages/admin/ManagePackageService'
 // Lawyer
 import LawyerHome from "./pages/lawyer/LawyerHome";
 import Appointment from "./pages/lawyer/Appointment";
+import Clients from "./pages/lawyer/Clients";
+import Settings from "./pages/lawyer/Settings";
 
 
 export default function App() {
@@ -60,6 +62,8 @@ export default function App() {
                 {/* Lawyer */}
                 <Route path="/lawyer/home" element={<LawyerHome />} />
                 <Route path="/lawyer/appointments" element={<Appointment />} />
+                <Route path="/lawyer/clients" element={<Clients />} />
+                <Route path="/lawyer/settings" element={<Settings />} />
 
             </Routes>
         </Router>
