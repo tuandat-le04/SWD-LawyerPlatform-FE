@@ -12,9 +12,21 @@ import Register from './pages/customer/Register'
 import AppointmentPage from "./pages/customer/AppointmentPage"
 import ServicesPage from "./pages/customer/Services"
 
+
+//Admin
+import AdminLayout from './components/layouts/AdminLayout'
+import AdminProfile from './pages/admin/AdminProfile'
+import Dashboard from './pages/admin/Dashboard'
+import ManageCustomer from './pages/admin/ManageCustomer'
+import ManageLawyer from './pages/admin/ManageLawyer'
+import ManageAppointment from './pages/admin/ManageAppointment'
+import ManageOrder from './pages/admin/ManageOrder'
+import ManagePackageService from './pages/admin/ManagePackageService'
+
 // Lawyer
 import LawyerHome from "./pages/lawyer/LawyerHome";
 import Appointment from "./pages/lawyer/Appointment";
+
 
 export default function App() {
     return (
@@ -31,9 +43,24 @@ export default function App() {
                     <Route path="/services" element={<ServicesPage />} />
                 </Route>
 
+
+
+           {/* Admin */}
+           <Route element={<AdminLayout/>}>
+                <Route path="/admin/adminProfile" element={<AdminProfile />} />
+                <Route path="/admin" element={<Dashboard />} />
+                <Route path="/admin/manageCustomer" element={<ManageCustomer />} />
+                <Route path="/admin/manageLawyer" element={<ManageLawyer />} />
+                <Route path="/admin/manageAppointment" element={<ManageAppointment />} />
+                <Route path="/admin/manageOrder" element={<ManageOrder />}/>
+                <Route path="/admin/managePackageService" element={<ManagePackageService />}/>
+            </Route>
+  
+
                 {/* Lawyer */}
                 <Route path="/lawyer/home" element={<LawyerHome />} />
                 <Route path="/lawyer/appointments" element={<Appointment />} />
+
             </Routes>
         </Router>
     )
