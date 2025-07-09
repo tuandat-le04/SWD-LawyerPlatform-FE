@@ -1,6 +1,7 @@
 import React from "react";
 import "./styles/index.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 // Customer
 import CustomerLayout from './components/layouts/CustomerLayout'
 import Home from './pages/customer/Home'
@@ -8,7 +9,9 @@ import Login from './pages/customer/Login'
 import LawyerPage from './pages/customer/LawyerPage'
 import ContactPage from './pages/customer/Contact'
 import Register from './pages/customer/Register'
-import AppointmentPage from "./pages/customer/AppointmentPage";
+import AppointmentPage from "./pages/customer/AppointmentPage"
+import ServicesPage from "./pages/customer/Services"
+
 
 //Admin
 import AdminLayout from './components/layouts/AdminLayout'
@@ -19,6 +22,12 @@ import ManageLawyer from './pages/admin/ManageLawyer'
 import ManageAppointment from './pages/admin/ManageAppointment'
 import ManageOrder from './pages/admin/ManageOrder'
 import ManagePackageService from './pages/admin/ManagePackageService'
+
+// Lawyer
+import LawyerHome from "./pages/lawyer/LawyerHome";
+import Appointment from "./pages/lawyer/Appointment";
+
+
 export default function App() {
     return (
         <Router>
@@ -31,7 +40,9 @@ export default function App() {
                     <Route path='/lawyer' element={<LawyerPage />} />
                     <Route path='/contact' element={<ContactPage />} />
                     <Route path="/appointment" element={<AppointmentPage />} />
+                    <Route path="/services" element={<ServicesPage />} />
                 </Route>
+
 
 
            {/* Admin */}
@@ -45,6 +56,11 @@ export default function App() {
                 <Route path="/admin/managePackageService" element={<ManagePackageService />}/>
             </Route>
   
+
+                {/* Lawyer */}
+                <Route path="/lawyer/home" element={<LawyerHome />} />
+                <Route path="/lawyer/appointments" element={<Appointment />} />
+
             </Routes>
         </Router>
     )

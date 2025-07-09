@@ -79,13 +79,13 @@ export default function CustomerHeader() {
                 ></span>
               )}
             </NavLink>
-            <a
-              href="/#services"
+            <NavLink
+              to="/services"
               className="text-gray-400 hover:text-amber-400 transition-all duration-300 relative group"
             >
               DỊCH VỤ
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
-            </a>
+            </NavLink>
             <NavLink
               to="/contact"
               className={({ isActive }) =>
