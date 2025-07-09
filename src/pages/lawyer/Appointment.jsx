@@ -28,7 +28,7 @@ const mockAppointments = [
     {
         id: 1,
         clientName: "Nguyễn Văn An",
-        clientAvatar: "/placeholder.svg?height=40&width=40",
+        clientAvatar: "../public/images/avatar.png",
         clientPhone: "0901234567",
         clientEmail: "nguyenvanan@email.com",
         type: "online",
@@ -46,7 +46,7 @@ const mockAppointments = [
     {
         id: 2,
         clientName: "Trần Thị Bình",
-        clientAvatar: "/placeholder.svg?height=40&width=40",
+        clientAvatar: "../public/images/avatar.png",
         clientPhone: "0912345678",
         clientEmail: "tranthib@email.com",
         type: "offline",
@@ -64,7 +64,7 @@ const mockAppointments = [
     {
         id: 3,
         clientName: "Lê Minh Cường",
-        clientAvatar: "/placeholder.svg?height=40&width=40",
+        clientAvatar: "../public/images/avatar.png",
         clientPhone: "0923456789",
         clientEmail: "leminhcuong@email.com",
         type: "phone",
@@ -82,7 +82,7 @@ const mockAppointments = [
     {
         id: 4,
         clientName: "Phạm Thị Dung",
-        clientAvatar: "/placeholder.svg?height=40&width=40",
+        clientAvatar: "../public/images/avatar.png",
         clientPhone: "0934567890",
         clientEmail: "phamthidung@email.com",
         type: "online",
@@ -100,7 +100,7 @@ const mockAppointments = [
     {
         id: 5,
         clientName: "Hoàng Văn Đức",
-        clientAvatar: "/placeholder.svg?height=40&width=40",
+        clientAvatar: "../public/images/avatar.png",
         clientPhone: "0945678901",
         clientEmail: "hoangvanduc@email.com",
         type: "offline",
@@ -118,7 +118,7 @@ const mockAppointments = [
     {
         id: 6,
         clientName: "Vũ Thị Hoa",
-        clientAvatar: "/placeholder.svg?height=40&width=40",
+        clientAvatar: "../public/images/avatar.png",
         clientPhone: "0956789012",
         clientEmail: "vuthihoa@email.com",
         type: "phone",
@@ -393,29 +393,6 @@ export default function LawyerAppointments() {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* View Toggle */}
-                        <div className="mb-6">
-                            <h3 className="text-sm font-medium text-gray-400 mb-3">Chế độ xem</h3>
-                            <div className="flex space-x-2">
-                                <button
-                                    onClick={() => setViewMode("list")}
-                                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${viewMode === "list" ? "bg-amber-500 text-gray-900" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                                        }`}
-                                >
-                                    Danh sách
-                                </button>
-                                <button
-                                    onClick={() => setViewMode("calendar")}
-                                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${viewMode === "calendar"
-                                        ? "bg-amber-500 text-gray-900"
-                                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                                        }`}
-                                >
-                                    Lịch
-                                </button>
                             </div>
                         </div>
 

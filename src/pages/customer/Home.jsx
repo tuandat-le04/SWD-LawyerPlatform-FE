@@ -41,7 +41,7 @@ export default function Home() {
       <section
         className="relative py-32 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center bg-cover bg-center"
         style={{
-          backgroundImage: "url('/src/assets/images/lawyerbackground.jpg')", // Hoặc /assets/images/law.jpg nếu trong thư mục public
+          backgroundImage: "url('../public/images/lawyerbackground.jpg')", // Hoặc /assets/images/law.jpg nếu trong thư mục public
         }}
       >
         {/* Overlay mờ đen để chữ nổi bật hơn */}
@@ -220,21 +220,21 @@ export default function Home() {
                 title: "Luật Bất Động Sản",
                 description:
                   "Chuyên gia tư vấn pháp lý về giao dịch bất động sản với hơn 10 năm kinh nghiệm.",
-                image: "../src/assets/images/vincenzo.jpg",
+                image: "../public/images/vincenzo.jpg",
               },
               {
                 name: "SOFIA",
                 title: "Luật Hôn Nhân",
                 description:
                   "Luật sư chuyên nghiệp trong lĩnh vực hôn nhân gia đình và bảo vệ quyền lợi phụ nữ trẻ em.",
-                image: "../src/assets/images/sofia.jpg",
+                image: "../public/images/sofia.jpg",
               },
               {
                 name: "JOHN",
                 title: "Luật Doanh Nghiệp",
                 description:
                   "Tư vấn doanh nghiệp hàng đầu với chuyên môn sâu về thành lập và vận hành công ty.",
-                image: "../src/assets/images/john.jpg",
+                image: "../public/images/john.jpg",
               },
             ].map((member, index) => (
               <div
