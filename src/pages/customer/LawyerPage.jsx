@@ -9,116 +9,108 @@ const lawyers = [
   {
     id: 1,
     name: "Luật sư Nguyễn Ngọc Quỳnh Như",
-    title: "Luật sư Trưởng",
     specialties: ["Luật Dân sự", "Luật Hôn nhân & Gia đình", "Luật Bất động sản"],
     experience: "15 năm kinh nghiệm",
     rating: 4.9,
     reviews: 127,
-    location: "TP. Hồ Chí Minh",
-    education: "Thạc sĩ Luật - Đại học Luật TP.HCM",
-    languages: ["Tiếng Việt", "English", "Tiếng Hàn"],
     consultationFee: "500.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
     description:
       "Chuyên gia trong lĩnh vực luật dân sự với hơn 15 năm kinh nghiệm. Đã xử lý thành công hơn 500 vụ việc.",
-    successRate: "98%",
-    cases: 500,
+    
+    
     verified: true,
     online: true,
   },
   {
     id: 2,
     name: "Luật sư Trần Hoàng Yến Nhung",
-    title: "Luật sư Chính",
+  
     specialties: ["Luật Lao động", "Luật Doanh nghiệp", "Luật Thuế"],
     experience: "12 năm kinh nghiệm",
     rating: 4.8,
     reviews: 89,
-    location: "Hà Nội",
-    education: "Tiến sĩ Luật - Đại học Luật Hà Nội",
-    languages: ["Tiếng Việt", "English", "中文"],
-    consultationFee: "600.000 VNĐ/giờ",
+    
+    
+   
     avatar: "../src/assets/images/sofia.jpg",
     description: "Chuyên gia tư vấn pháp lý cho doanh nghiệp, có kinh nghiệm làm việc tại các công ty luật hàng đầu.",
-    successRate: "96%",
-    cases: 320,
+    
+  
     verified: true,
     online: false,
   },
   {
     id: 3,
     name: "Luật sư Phạm Hữu Nhật Minh",
-    title: "Luật sư",
+  
     specialties: ["Luật Hình sự", "Luật Tố tụng", "Bào chữa"],
     experience: "8 năm kinh nghiệm",
     rating: 4.7,
     reviews: 64,
-    location: "Đà Nẵng",
-    education: "Cử nhân Luật - Đại học Luật Huế",
-    languages: ["Tiếng Việt", "English"],
+   
+   
+   
     consultationFee: "400.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
     description: "Luật sư trẻ năng động, chuyên về luật hình sự và bào chữa. Tỷ lệ thành công cao trong các vụ án.",
-    successRate: "94%",
-    cases: 180,
+     
+    
     verified: true,
     online: true,
   },
   {
     id: 4,
     name: "Luật sư Lê Trần Tuấn Đạt",
-    title: "Luật sư Chính",
+
     specialties: ["Luật Sở hữu trí tuệ", "Luật Công nghệ", "Luật Thương mại"],
     experience: "10 năm kinh nghiệm",
     rating: 4.9,
     reviews: 156,
-    location: "TP. Hồ Chí Minh",
-    education: "Thạc sĩ Luật - Đại học Quốc gia TP.HCM",
-    languages: ["Tiếng Việt", "English", "日本語"],
+ 
+    
+  
     consultationFee: "700.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
     description:
       "Chuyên gia hàng đầu về luật sở hữu trí tuệ và công nghệ, từng làm việc cho các tập đoàn công nghệ lớn.",
-    successRate: "99%",
-    cases: 280,
+   
     verified: true,
     online: true,
   },
   {
     id: 5,
     name: "Luật sư Võ Minh Tuấn",
-    title: "Luật sư Trưởng",
+
     specialties: ["Luật Đầu tư", "Luật Ngân hàng", "M&A"],
     experience: "18 năm kinh nghiệm",
     rating: 5.0,
     reviews: 203,
-    location: "Hà Nội",
-    education: "Tiến sĩ Luật - Đại học Luật Hà Nội, LLM - Harvard Law School",
-    languages: ["Tiếng Việt", "English", "Français"],
+    
+    
     consultationFee: "1.000.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
     description: "Luật sư hàng đầu trong lĩnh vực đầu tư và M&A, có bằng LLM từ Harvard Law School.",
-    successRate: "100%",
-    cases: 450,
+   
+   
     verified: true,
     online: false,
   },
   {
     id: 6,
     name: "Luật sư Đặng Thị Mai",
-    title: "Luật sư",
+ 
     specialties: ["Luật Y tế", "Luật Bảo hiểm", "Luật Tiêu dùng"],
     experience: "6 năm kinh nghiệm",
     rating: 4.6,
     reviews: 42,
-    location: "Cần Thơ",
-    education: "Cử nhân Luật - Đại học Cần Thơ",
-    languages: ["Tiếng Việt", "English"],
+    
+   
+   
     consultationFee: "350.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
     description: "Luật sư trẻ chuyên về luật y tế và bảo vệ quyền lợi người tiêu dùng.",
-    successRate: "92%",
-    cases: 95,
+    
     verified: true,
     online: true,
   },
@@ -128,7 +120,7 @@ const testimonials = [
   {
     id: 1,
     name: "Nguyễn Văn An",
-    role: "Giám đốc công ty",
+   
     content:
       "Dịch vụ tư vấn pháp lý rất chuyên nghiệp. Luật sư đã giúp tôi giải quyết vấn đề phức tạp một cách hiệu quả.",
     rating: 5,
@@ -137,7 +129,7 @@ const testimonials = [
   {
     id: 2,
     name: "Trần Thị Bình",
-    role: "Chủ doanh nghiệp",
+  
     content: "Tôi rất hài lòng với chất lượng dịch vụ. Luật sư tận tâm và có kinh nghiệm thực tế cao.",
     rating: 5,
     avatar: "../src/assets/images/sofia.jpg",
@@ -145,7 +137,7 @@ const testimonials = [
   {
     id: 3,
     name: "Lê Minh Cường",
-    role: "Khách hàng cá nhân",
+    
     content: "Quy trình tư vấn rõ ràng, minh bạch. Giá cả hợp lý và kết quả vượt mong đợi.",
     rating: 4,
     avatar: "../src/assets/images/sofia.jpg",
@@ -252,9 +244,8 @@ export default function LawyersPage() {
       lawyer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesSpecialty = !selectedSpecialty || lawyer.specialties.includes(selectedSpecialty)
-    const matchesLocation = !selectedLocation || lawyer.location === selectedLocation
-
-    return matchesSearch && matchesSpecialty && matchesLocation
+    // Đã xóa matchesLocation vì không còn location
+    return matchesSearch && matchesSpecialty
   })
 
   if (loading) {
@@ -416,30 +407,7 @@ export default function LawyersPage() {
                     </svg>
                   </div>
                 </div>
-                <div className="relative w-full lg:w-48 group">
-                  <div className="relative">
-                    <select
-                      value={selectedLocation}
-                      onChange={handleLocationChange}
-                      className="w-full px-4 py-4 bg-gray-700/50 border border-gray-600 rounded-2xl text-white focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none appearance-none transition-all duration-300"
-                    >
-                      <option value="">Tất cả địa điểm</option>
-                      {locations.map((location) => (
-                        <option key={location} value={location}>
-                          {location}
-                        </option>
-                      ))}
-                    </select>
-                    <svg
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -493,42 +461,13 @@ export default function LawyersPage() {
                           </svg>
                         </div>
                       )}
-                      <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-sm px-2 py-1 rounded-full font-bold shadow-lg">
-                        {lawyer.rating}
-                      </div>
+                      {/* Đã xóa reviews và rating ở đây */}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-lg text-white mb-1 group-hover:text-amber-400 transition-colors duration-300">
                         {lawyer.name}
                       </h3>
-                      <p className="text-amber-400 font-medium text-sm mb-2 group-hover:text-amber-300 transition-colors duration-300">
-                        {lawyer.title}
-                      </p>
-                      <div className="flex items-center text-sm text-gray-400 mb-2">
-                        <svg className="w-4 h-4 text-yellow-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <span className="font-medium text-white">{lawyer.rating}</span>
-                        <span className="mx-1">•</span>
-                        <span>{lawyer.reviews} đánh giá</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-400">
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        <span>{lawyer.location}</span>
-                      </div>
+                      {/* Đã xóa phần reviews và location */}
                     </div>
                   </div>
                 </div>
@@ -536,16 +475,7 @@ export default function LawyersPage() {
                 {/* Card Content */}
                 <div className="px-8 pb-8 space-y-4">
                   {/* Success Rate & Cases */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gray-700/50 rounded-xl p-3 text-center border border-gray-600 group-hover:border-amber-500/30 transition-all duration-300">
-                      <div className="text-lg font-bold text-amber-400">{lawyer.successRate}</div>
-                      <div className="text-xs text-gray-400">Tỷ lệ thành công</div>
-                    </div>
-                    <div className="bg-gray-700/50 rounded-xl p-3 text-center border border-gray-600 group-hover:border-amber-500/30 transition-all duration-300">
-                      <div className="text-lg font-bold text-amber-400">{lawyer.cases}+</div>
-                      <div className="text-xs text-gray-400">Vụ việc</div>
-                    </div>
-                  </div>
+                  {/* Đã xóa cases */}
 
                   {/* Specialties */}
                   <div>
@@ -606,15 +536,7 @@ export default function LawyersPage() {
                     </div>
                   </div>
 
-                  {/* Languages */}
-                  <div>
-                    <h4 className="font-medium text-white mb-1 text-sm group-hover:text-amber-400 transition-colors duration-300">
-                      Ngôn ngữ
-                    </h4>
-                    <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                      {lawyer.languages.join(", ")}
-                    </p>
-                  </div>
+                  {/* Đã xóa Languages */}
 
                   {/* Description */}
                   <div>
@@ -711,7 +633,7 @@ export default function LawyersPage() {
                 </div>
                 <p className="text-lg text-gray-300 mb-6 italic">"{testimonials[currentTestimonial].content}"</p>
                 <h4 className="text-xl font-bold text-white">{testimonials[currentTestimonial].name}</h4>
-                <p className="text-amber-400">{testimonials[currentTestimonial].role}</p>
+               
               </div>
 
               {/* Navigation dots */}
