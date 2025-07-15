@@ -493,7 +493,7 @@ const ManageServices = () => {
                                     >
                                         <option value="all">Tất cả trạng thái</option>
                                         <option value="active">Hoạt động</option>
-                                        <option value="paused">Tạm dừng</option>
+                                        
                                         <option value="inactive">Không hoạt động</option>
                                     </select>
 
@@ -535,12 +535,7 @@ const ManageServices = () => {
                                         >
                                             Kích hoạt
                                         </button>
-                                        <button
-                                            onClick={() => handleBulkAction("pause")}
-                                            className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white rounded text-sm transition-colors"
-                                        >
-                                            Tạm dừng
-                                        </button>
+                                    
                                         <button
                                             onClick={() => handleBulkAction("delete")}
                                             className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
@@ -651,7 +646,7 @@ const ManageServices = () => {
                                                             )}`}
                                                         >
                                                             <option value="active">Hoạt động</option>
-                                                            <option value="paused">Tạm dừng</option>
+                                                          
                                                             <option value="inactive">Không hoạt động</option>
                                                         </select>
                                                     </td>
@@ -742,11 +737,9 @@ const ManageServices = () => {
                                         <span
                                             className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedService.status)}`}
                                         >
-                                            {selectedService.status === "active"
-                                                ? "Hoạt động"
-                                                : selectedService.status === "paused"
-                                                    ? "Tạm dừng"
-                                                    : "Không hoạt động"}
+                                           {selectedService.status === "active"
+                                           ? "Hoạt động"
+                                           : "Không hoạt động"}
                                         </span>
                                         <span className="text-sm text-gray-400">Danh mục: {selectedService.category}</span>
                                     </div>
@@ -903,7 +896,7 @@ const ManageServices = () => {
                                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                                 >
                                     <option value="active">Hoạt động</option>
-                                    <option value="paused">Tạm dừng</option>
+                                    
                                     <option value="inactive">Không hoạt động</option>
                                 </select>
                             </div>

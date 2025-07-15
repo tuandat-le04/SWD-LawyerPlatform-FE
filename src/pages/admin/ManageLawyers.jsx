@@ -464,7 +464,7 @@ export default function ManageLawyers() {
                                 <div className="mt-6 pt-6 border-t border-gray-700">
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">Trạng thái</label>
+                                          
                                             <select
                                                 value={statusFilter}
                                                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -583,9 +583,7 @@ export default function ManageLawyers() {
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                                 Phí/giờ
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                                Trạng thái
-                                            </th>
+                                           
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                                 Thao tác
                                             </th>
@@ -646,17 +644,7 @@ export default function ManageLawyers() {
                                                     <td className="px-6 py-4">
                                                         <span className="text-sm text-white">{lawyer.hourlyRate.toLocaleString("vi-VN")}đ</span>
                                                     </td>
-                                                    <td className="px-6 py-4">
-                                                        <select
-                                                            value={lawyer.status}
-                                                            onChange={(e) => handleStatusChange(lawyer.id, e.target.value)}
-                                                            className={`px-2 py-1 rounded-full text-xs font-medium border-0 ${lawyer.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                                                                }`}
-                                                        >
-                                                            <option value="active">Hoạt động</option>
-                                                            <option value="inactive">Tạm dừng</option>
-                                                        </select>
-                                                    </td>
+                                                   
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center space-x-2">
                                                             <button

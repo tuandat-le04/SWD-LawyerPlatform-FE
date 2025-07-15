@@ -11,7 +11,7 @@ import ContactPage from './pages/customer/Contact'
 import Register from './pages/customer/Register'
 import AppointmentPage from "./pages/customer/AppointmentPage"
 import ServicesPage from "./pages/customer/Services"
-
+import Profile from "./pages/customer/Profile"
 
 //Admin
 import AdminHome from "./pages/admin/Home"
@@ -43,6 +43,7 @@ export default function App() {
                     <Route path='/contact' element={<ContactPage />} />
                     <Route path="/appointment" element={<AppointmentPage />} />
                     <Route path="/services" element={<ServicesPage />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Route>
 
 

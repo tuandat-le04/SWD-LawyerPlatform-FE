@@ -609,16 +609,7 @@ const ManageCustomer = () => {
                   <option value="client">Khách hàng</option>
                   <option value="lawyer">Luật sư</option>
                 </select>
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="active">Hoạt động</option>
-                  <option value="pending">Chờ duyệt</option>
-                  <option value="inactive">Không hoạt động</option>
-                </select>
+               
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -652,9 +643,7 @@ const ManageCustomer = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Vai trò
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Trạng thái
-                    </th>
+                    
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Lịch hẹn
                     </th>
@@ -704,17 +693,7 @@ const ManageCustomer = () => {
                           {user.role === "lawyer" ? "Luật sư" : user.role === "client" ? "Khách hàng" : "Admin"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <select
-                          value={user.status}
-                          onChange={(e) => handleStatusChange(user.id, e.target.value)}
-                          className={`px-2 py-1 rounded-full text-xs font-medium border bg-transparent ${getStatusColor(user.status)}`}
-                        >
-                          <option value="active">Hoạt động</option>
-                          <option value="pending">Chờ duyệt</option>
-                          <option value="inactive">Không hoạt động</option>
-                        </select>
-                      </td>
+                     
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{user.totalAppointments}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                         {user.role === "client" ? formatCurrency(user.totalSpent) : "-"}
