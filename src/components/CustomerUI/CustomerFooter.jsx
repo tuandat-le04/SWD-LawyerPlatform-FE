@@ -45,12 +45,12 @@ export default function CustomerFooter() {
                 </a>
               </li>
               <li>
-                <a href="/#services" className="text-gray-400 hover:text-amber-400 transition-colors">
+                <a href="/services" className="text-gray-400 hover:text-amber-400 transition-colors">
                   Dịch vụ pháp lý
                 </a>
               </li>
               <li>
-                <a href="/#contact" className="text-gray-400 hover:text-amber-400 transition-colors">
+                <a href="/contact" className="text-gray-400 hover:text-amber-400 transition-colors">
                   Liên hệ
                 </a>
               </li>
