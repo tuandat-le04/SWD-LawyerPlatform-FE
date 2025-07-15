@@ -41,7 +41,7 @@ export default function Home() {
       <section
         className="relative py-32 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center bg-cover bg-center"
         style={{
-          backgroundImage: "url('../public/images/lawyerbackground.jpg')", // Hoặc /assets/images/law.jpg nếu trong thư mục public
+          backgroundImage: "url('/images/lawyerbackground.jpg')",
         }}
       >
         {/* Overlay mờ đen để chữ nổi bật hơn */}
@@ -88,7 +88,8 @@ export default function Home() {
                     <span>Đặt lịch tư vấn</span>
                   </div>
                 </button>
-                <button className="border-2 border-amber-500 text-amber-500 bg-transparent px-8 py-4 rounded-xl hover:bg-amber-500 hover:text-gray-900 transition-all duration-300 font-semibold">
+                <button
+                  className="border-2 border-amber-500 text-amber-500 bg-transparent px-8 py-4 rounded-xl hover:bg-amber-500 hover:text-gray-900 transition-all duration-300 font-semibold">
                   <div className="flex items-center justify-center space-x-2">
                     <FileText className="h-5 w-5" />
                     <span>Tải mẫu đơn</span>
@@ -162,7 +163,7 @@ export default function Home() {
                   {service.description}
                 </p>
                 <div className="flex items-center text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-sm font-medium">Xem thêm</span>
+                  <button className="text-sm font-medium" onClick={() => { navigate(`/services`) }}>Xem thêm</button>
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </div>
               </div>
@@ -220,21 +221,21 @@ export default function Home() {
                 title: "Luật Bất Động Sản",
                 description:
                   "Chuyên gia tư vấn pháp lý về giao dịch bất động sản với hơn 10 năm kinh nghiệm.",
-                image: "../public/images/vincenzo.jpg",
+                image: "/images/vincenzo.jpg",
               },
               {
                 name: "SOFIA",
                 title: "Luật Hôn Nhân",
                 description:
                   "Luật sư chuyên nghiệp trong lĩnh vực hôn nhân gia đình và bảo vệ quyền lợi phụ nữ trẻ em.",
-                image: "../public/images/sofia.jpg",
+                image: "/images/sofia.jpg",
               },
               {
                 name: "JOHN",
                 title: "Luật Doanh Nghiệp",
                 description:
                   "Tư vấn doanh nghiệp hàng đầu với chuyên môn sâu về thành lập và vận hành công ty.",
-                image: "../public/images/john.jpg",
+                image: "/images/john.jpg",
               },
             ].map((member, index) => (
               <div
