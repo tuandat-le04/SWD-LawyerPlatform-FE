@@ -26,13 +26,6 @@ export default function Appointment() {
   const [consultationType, setConsultationType] = useState("");
   const [duration, setDuration] = useState("60");
   const [method, setMethod] = useState("online");
-  const [customerInfo, setCustomerInfo] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    address: "",
-    notes: "",
-  });
   const navigate = useNavigate();
 
   // Data states
@@ -112,7 +105,7 @@ export default function Appointment() {
   };
 
   const handleNextStep = () => {
-    if (currentStep < 4) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -135,8 +128,6 @@ export default function Appointment() {
         duration: Number.parseInt(duration),
         method,
         selectedLawyer,
-        customerInfo,
-        notes: customerInfo.notes,
       };
 
       const result = await appointmentService.submitAppointment(
@@ -213,8 +204,7 @@ export default function Appointment() {
         return consultationType && duration && method;
       case 2:
         return selectedDate && selectedTime;
-      case 3:
-        return customerInfo.name && customerInfo.phone && customerInfo.email;
+
       default:
         return true;
     }
@@ -294,8 +284,7 @@ export default function Appointment() {
               {[
                 { step: 1, title: "Chọn dịch vụ" },
                 { step: 2, title: "Chọn thời gian" },
-                { step: 3, title: "Thông tin cá nhân" },
-                { step: 4, title: "Xác nhận" },
+                { step: 3, title: "Xác nhận" },
               ].map((item, index) => (
                 <div key={item.step} className="flex items-center">
                   <div
@@ -318,7 +307,7 @@ export default function Appointment() {
                   >
                     {item.title}
                   </span>
-                  {index < 3 && (
+                  {index < 2 && (
                     <div
                       className={`w-16 h-0.5 mx-4 ${
                         currentStep > item.step ? "bg-amber-500" : "bg-gray-700"
@@ -662,110 +651,8 @@ export default function Appointment() {
                 </div>
               )}
 
-              {/* Step 3: Customer Information */}
+              {/* Step 3: Confirmation */}
               {currentStep === 3 && (
-                <div className="bg-gray-800 rounded-3xl p-8 border border-gray-700">
-                  <h2 className="text-2xl font-bold text-white mb-6">
-                    Thông tin liên hệ
-                  </h2>
-
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Họ và tên <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={customerInfo.name}
-                          onChange={(e) =>
-                            setCustomerInfo({
-                              ...customerInfo,
-                              name: e.target.value,
-                            })
-                          }
-                          className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
-                          placeholder="Nhập họ và tên của bạn"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Số điện thoại <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="tel"
-                          value={customerInfo.phone}
-                          onChange={(e) =>
-                            setCustomerInfo({
-                              ...customerInfo,
-                              phone: e.target.value,
-                            })
-                          }
-                          className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
-                          placeholder="0123 456 789"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Email <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        value={customerInfo.email}
-                        onChange={(e) =>
-                          setCustomerInfo({
-                            ...customerInfo,
-                            email: e.target.value,
-                          })
-                        }
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
-                        placeholder="email@example.com"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Địa chỉ
-                      </label>
-                      <input
-                        type="text"
-                        value={customerInfo.address}
-                        onChange={(e) =>
-                          setCustomerInfo({
-                            ...customerInfo,
-                            address: e.target.value,
-                          })
-                        }
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
-                        placeholder="Nhập địa chỉ của bạn"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Ghi chú thêm
-                      </label>
-                      <textarea
-                        rows={4}
-                        value={customerInfo.notes}
-                        onChange={(e) =>
-                          setCustomerInfo({
-                            ...customerInfo,
-                            notes: e.target.value,
-                          })
-                        }
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
-                        placeholder="Mô tả chi tiết vấn đề cần tư vấn..."
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Confirmation */}
-              {currentStep === 4 && (
                 <div className="bg-gray-800 rounded-3xl p-8 border border-gray-700">
                   <h2 className="text-2xl font-bold text-white mb-6">
                     Xác nhận thông tin đặt lịch
@@ -813,41 +700,6 @@ export default function Appointment() {
                             <span className="text-gray-300">Luật sư:</span>
                             <span className="text-white font-medium">
                               {getSelectedLawyerInfo()?.name}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Customer Info Summary */}
-                    <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
-                      <h3 className="text-lg font-semibold text-white mb-4">
-                        Thông tin khách hàng
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-gray-300">Họ tên:</span>
-                          <span className="text-white font-medium">
-                            {customerInfo.name}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-300">Điện thoại:</span>
-                          <span className="text-white font-medium">
-                            {customerInfo.phone}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-300">Email:</span>
-                          <span className="text-white font-medium">
-                            {customerInfo.email}
-                          </span>
-                        </div>
-                        {customerInfo.address && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-300">Địa chỉ:</span>
-                            <span className="text-white font-medium">
-                              {customerInfo.address}
                             </span>
                           </div>
                         )}
@@ -905,7 +757,7 @@ export default function Appointment() {
                   <div></div>
                 )}
 
-                {currentStep < 4 ? (
+                {currentStep < 3 ? (
                   <button
                     onClick={handleNextStep}
                     disabled={!canProceedToNextStep()}

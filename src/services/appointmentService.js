@@ -220,18 +220,6 @@ const validateAppointmentData = (appointmentData) => {
     errors.push("Vui lòng chọn phương thức tư vấn");
   }
 
-  if (!appointmentData.customerInfo?.name) {
-    errors.push("Vui lòng nhập họ tên");
-  }
-
-  if (!appointmentData.customerInfo?.phone) {
-    errors.push("Vui lòng nhập số điện thoại");
-  }
-
-  if (!appointmentData.customerInfo?.email) {
-    errors.push("Vui lòng nhập email");
-  }
-
   return errors;
 };
 
@@ -375,7 +363,6 @@ export const appointmentService = {
       status: appointmentStatuses.PENDING,
       totalPrice: priceInfo.price,
       notes: appointmentData.notes || "",
-      customerInfo: appointmentData.customerInfo,
       createdAt: new Date().toISOString(),
       meetingLink: meetingLink,
     };
