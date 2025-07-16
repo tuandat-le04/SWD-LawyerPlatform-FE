@@ -1,207 +1,45 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 import { lawyerService } from "../../services/lawyerService"
-
-// Mock data for lawyers
-const lawyers = [
-  {
-    id: 1,
-    name: "Luật sư Nguyễn Ngọc Quỳnh Như",
-    specialties: ["Luật Dân sự", "Luật Hôn nhân & Gia đình", "Luật Bất động sản"],
-    experience: "15 năm kinh nghiệm",
-    rating: 4.9,
-    reviews: 127,
-    consultationFee: "500.000 VNĐ/giờ",
-    avatar: "../src/assets/images/sofia.jpg",
-    description:
-      "Chuyên gia trong lĩnh vực luật dân sự với hơn 15 năm kinh nghiệm. Đã xử lý thành công hơn 500 vụ việc.",
-    
-    
-    verified: true,
-    online: true,
-  },
-  {
-    id: 2,
-    name: "Luật sư Trần Hoàng Yến Nhung",
-  
-    specialties: ["Luật Lao động", "Luật Doanh nghiệp", "Luật Thuế"],
-    experience: "12 năm kinh nghiệm",
-    rating: 4.8,
-    reviews: 89,
-    
-    
-   
-    avatar: "../src/assets/images/sofia.jpg",
-    description: "Chuyên gia tư vấn pháp lý cho doanh nghiệp, có kinh nghiệm làm việc tại các công ty luật hàng đầu.",
-    
-  
-    verified: true,
-    online: false,
-  },
-  {
-    id: 3,
-    name: "Luật sư Phạm Hữu Nhật Minh",
-  
-    specialties: ["Luật Hình sự", "Luật Tố tụng", "Bào chữa"],
-    experience: "8 năm kinh nghiệm",
-    rating: 4.7,
-    reviews: 64,
-   
-   
-   
-    consultationFee: "400.000 VNĐ/giờ",
-    avatar: "../src/assets/images/sofia.jpg",
-    description: "Luật sư trẻ năng động, chuyên về luật hình sự và bào chữa. Tỷ lệ thành công cao trong các vụ án.",
-     
-    
-    verified: true,
-    online: true,
-  },
-  {
-    id: 4,
-    name: "Luật sư Lê Trần Tuấn Đạt",
-
-    specialties: ["Luật Sở hữu trí tuệ", "Luật Công nghệ", "Luật Thương mại"],
-    experience: "10 năm kinh nghiệm",
-    rating: 4.9,
-    reviews: 156,
- 
-    
-  
-    consultationFee: "700.000 VNĐ/giờ",
-    avatar: "../src/assets/images/sofia.jpg",
-    description:
-      "Chuyên gia hàng đầu về luật sở hữu trí tuệ và công nghệ, từng làm việc cho các tập đoàn công nghệ lớn.",
-   
-    verified: true,
-    online: true,
-  },
-  {
-    id: 5,
-    name: "Luật sư Võ Minh Tuấn",
-
-    specialties: ["Luật Đầu tư", "Luật Ngân hàng", "M&A"],
-    experience: "18 năm kinh nghiệm",
-    rating: 5.0,
-    reviews: 203,
-    
-    
-    consultationFee: "1.000.000 VNĐ/giờ",
-    avatar: "../src/assets/images/sofia.jpg",
-    description: "Luật sư hàng đầu trong lĩnh vực đầu tư và M&A, có bằng LLM từ Harvard Law School.",
-   
-   
-    verified: true,
-    online: false,
-  },
-  {
-    id: 6,
-    name: "Luật sư Đặng Thị Mai",
- 
-    specialties: ["Luật Y tế", "Luật Bảo hiểm", "Luật Tiêu dùng"],
-    experience: "6 năm kinh nghiệm",
-    rating: 4.6,
-    reviews: 42,
-    
-   
-   
-    consultationFee: "350.000 VNĐ/giờ",
-    avatar: "../src/assets/images/sofia.jpg",
-    description: "Luật sư trẻ chuyên về luật y tế và bảo vệ quyền lợi người tiêu dùng.",
-    
-    verified: true,
-    online: true,
-  },
-]
-
-const testimonials = [
-  {
-    id: 1,
-    name: "Nguyễn Văn An",
-   
-    content:
-      "Dịch vụ tư vấn pháp lý rất chuyên nghiệp. Luật sư đã giúp tôi giải quyết vấn đề phức tạp một cách hiệu quả.",
-    rating: 5,
-    avatar: "../src/assets/images/sofia.jpg",
-  },
-  {
-    id: 2,
-    name: "Trần Thị Bình",
-  
-    content: "Tôi rất hài lòng với chất lượng dịch vụ. Luật sư tận tâm và có kinh nghiệm thực tế cao.",
-    rating: 5,
-    avatar: "../src/assets/images/sofia.jpg",
-  },
-  {
-    id: 3,
-    name: "Lê Minh Cường",
-    
-    content: "Quy trình tư vấn rõ ràng, minh bạch. Giá cả hợp lý và kết quả vượt mong đợi.",
-    rating: 4,
-    avatar: "../src/assets/images/sofia.jpg",
-  },
-]
-
-const faqs = [
-  {
-    question: "Làm thế nào để đặt lịch tư vấn với luật sư?",
-    answer:
-      "Bạn có thể đặt lịch trực tiếp qua website, gọi hotline hoặc nhắn tin cho luật sư. Chúng tôi sẽ sắp xếp lịch phù hợp trong vòng 24h.",
-  },
-  {
-    question: "Chi phí tư vấn pháp lý như thế nào?",
-    answer:
-      "Chi phí tùy thuộc vào từng luật sư và loại vụ việc. Bạn có thể xem phí tư vấn của từng luật sư trên profile. Buổi tư vấn đầu tiên thường có giá ưu đãi.",
-  },
-  {
-    question: "Thông tin cá nhân có được bảo mật không?",
-    answer:
-      "Chúng tôi cam kết bảo mật tuyệt đối thông tin khách hàng theo quy định pháp luật và đạo đức nghề nghiệp luật sư.",
-  },
-  {
-    question: "Có thể tư vấn trực tuyến không?",
-    answer:
-      "Có, chúng tôi hỗ trợ tư vấn trực tuyến qua video call, điện thoại hoặc chat. Đặc biệt thuận tiện cho khách hàng ở xa.",
-  },
-]
 
 export default function LawyersPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSpecialty, setSelectedSpecialty] = useState("")
-  const [selectedLocation, setSelectedLocation] = useState("")
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [openFaq, setOpenFaq] = useState(null)
   const [isVisible, setIsVisible] = useState(false)
   const [lawyers, setLawyers] = useState([])
   const [testimonials, setTestimonials] = useState([])
   const [faqs, setFaqs] = useState([])
-  const [specialties, setSpecialties] = useState([])
-  const [locations, setLocations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const navigate = useNavigate()
+
+  // Static specialties list
+  const specialties = [
+    "Luật doanh nghiệp",
+    "Luật bất động sản",
+    "Luật hình sự",
+    "Luật lao động",
+    "Luật hôn nhân & gia đình",
+    "Luật tài chính & ngân hàng",
+    "Luật hành chính"
+  ]
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
         setError(null)
-        const [lawyersData, testimonialsData, faqsData, specialtiesData, locationsData] = await Promise.all([
+        const [lawyersData, testimonialsData, faqsData] = await Promise.all([
           lawyerService.getAllLawyers(),
           lawyerService.getAllTestimonials(),
-          lawyerService.getAllFaqs(),
-          lawyerService.getAllSpecialties(),
-          lawyerService.getAllLocations()
+          lawyerService.getAllFaqs()
         ])
-        
+
         setLawyers(lawyersData)
         setTestimonials(testimonialsData)
         setFaqs(faqsData)
-        setSpecialties(specialtiesData)
-        setLocations(locationsData)
         setIsVisible(true)
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -223,20 +61,12 @@ export default function LawyersPage() {
     }
   }, [testimonials])
 
-  const handleLoginClick = () => {
-    navigate('/login')
-  }
-
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value)
   }
 
   const handleSpecialtyChange = (e) => {
     setSelectedSpecialty(e.target.value)
-  }
-
-  const handleLocationChange = (e) => {
-    setSelectedLocation(e.target.value)
   }
 
   const filteredLawyers = lawyers.filter((lawyer) => {
@@ -269,8 +99,8 @@ export default function LawyersPage() {
             </svg>
           </div>
           <p className="text-white text-lg">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="mt-4 px-6 py-2 bg-amber-500 text-gray-900 rounded-lg hover:bg-amber-600 transition-colors"
           >
             Thử lại
@@ -302,7 +132,7 @@ export default function LawyersPage() {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-r from-gray-700/20 to-gray-600/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
       </div>
 
-      
+
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-gray-800 to-gray-900 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-yellow-500/5"></div>
@@ -407,7 +237,7 @@ export default function LawyersPage() {
                     </svg>
                   </div>
                 </div>
-                
+
               </div>
             </div>
           </div>
@@ -633,7 +463,7 @@ export default function LawyersPage() {
                 </div>
                 <p className="text-lg text-gray-300 mb-6 italic">"{testimonials[currentTestimonial].content}"</p>
                 <h4 className="text-xl font-bold text-white">{testimonials[currentTestimonial].name}</h4>
-               
+
               </div>
 
               {/* Navigation dots */}
@@ -642,9 +472,8 @@ export default function LawyersPage() {
                   <button
                     key={index}
                     onClick={() => setCurrentTestimonial(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      index === currentTestimonial ? "bg-amber-500" : "bg-gray-600 hover:bg-gray-500"
-                    }`}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentTestimonial ? "bg-amber-500" : "bg-gray-600 hover:bg-gray-500"
+                      }`}
                   />
                 ))}
               </div>
@@ -670,9 +499,8 @@ export default function LawyersPage() {
                 >
                   <span className="font-medium text-white">{faq.question}</span>
                   <svg
-                    className={`w-5 h-5 text-amber-400 transform transition-transform duration-300 ${
-                      openFaq === index ? "rotate-180" : ""
-                    }`}
+                    className={`w-5 h-5 text-amber-400 transform transition-transform duration-300 ${openFaq === index ? "rotate-180" : ""
+                      }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

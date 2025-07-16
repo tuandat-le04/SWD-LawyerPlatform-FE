@@ -44,15 +44,6 @@ const officesData = [
 
 const contactMethodsData = [
   {
-    id: 1,
-    icon: "phone",
-    title: "Gọi điện trực tiếp",
-    description: "Liên hệ ngay với đội ngũ tư vấn",
-    value: "1900-BASICO",
-    action: "Gọi ngay",
-    available: "24/7",
-  },
-  {
     id: 2,
     icon: "email",
     title: "Gửi email",
@@ -60,15 +51,6 @@ const contactMethodsData = [
     value: "contact@basico.vn",
     action: "Gửi email",
     available: "Phản hồi trong 2h",
-  },
-  {
-    id: 3,
-    icon: "chat",
-    title: "Chat trực tuyến",
-    description: "Tư vấn nhanh qua Messenger/Zalo",
-    value: "Chat ngay",
-    action: "Bắt đầu chat",
-    available: "8:00 - 22:00",
   },
   {
     id: 4,
@@ -133,15 +115,6 @@ const validatePhone = (phone) => {
 
 const getContactIcon = (iconType) => {
   switch (iconType) {
-    case "phone":
-      return (
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-        />
-      )
     case "email":
       return (
         <path
@@ -149,15 +122,6 @@ const getContactIcon = (iconType) => {
           strokeLinejoin="round"
           strokeWidth={2}
           d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-        />
-      )
-    case "chat":
-      return (
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
         />
       )
     case "video":
@@ -213,7 +177,6 @@ const contactApi = {
 
 export default function ContactPage() {
   // State Management
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [contactMethods, setContactMethods] = useState([])
@@ -357,7 +320,7 @@ export default function ContactPage() {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-r from-gray-700/20 to-gray-600/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
       </div>
 
-     
+
 
       {/* Hero Section */}
       <section className="relative py-24 bg-gray-900">
@@ -492,9 +455,8 @@ export default function ContactPage() {
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
-                            className={`w-full px-4 py-3 bg-gray-700/50 border ${
-                              formErrors.name ? "border-red-500" : "border-gray-600"
-                            } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300`}
+                            className={`w-full px-4 py-3 bg-gray-700/50 border ${formErrors.name ? "border-red-500" : "border-gray-600"
+                              } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300`}
                             placeholder="Nhập họ và tên của bạn"
                           />
                           {formErrors.name && <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>}
@@ -507,9 +469,8 @@ export default function ContactPage() {
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            className={`w-full px-4 py-3 bg-gray-700/50 border ${
-                              formErrors.email ? "border-red-500" : "border-gray-600"
-                            } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300`}
+                            className={`w-full px-4 py-3 bg-gray-700/50 border ${formErrors.email ? "border-red-500" : "border-gray-600"
+                              } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300`}
                             placeholder="email@example.com"
                           />
                           {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
@@ -524,9 +485,8 @@ export default function ContactPage() {
                             name="phone"
                             value={formData.phone}
                             onChange={handleInputChange}
-                            className={`w-full px-4 py-3 bg-gray-700/50 border ${
-                              formErrors.phone ? "border-red-500" : "border-gray-600"
-                            } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300`}
+                            className={`w-full px-4 py-3 bg-gray-700/50 border ${formErrors.phone ? "border-red-500" : "border-gray-600"
+                              } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300`}
                             placeholder="0123 456 789"
                           />
                           {formErrors.phone && <p className="text-red-500 text-xs mt-1">{formErrors.phone}</p>}
@@ -557,9 +517,8 @@ export default function ContactPage() {
                           name="subject"
                           value={formData.subject}
                           onChange={handleInputChange}
-                          className={`w-full px-4 py-3 bg-gray-700/50 border ${
-                            formErrors.subject ? "border-red-500" : "border-gray-600"
-                          } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300`}
+                          className={`w-full px-4 py-3 bg-gray-700/50 border ${formErrors.subject ? "border-red-500" : "border-gray-600"
+                            } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300`}
                           placeholder="Tóm tắt vấn đề cần tư vấn"
                         />
                         {formErrors.subject && <p className="text-red-500 text-xs mt-1">{formErrors.subject}</p>}
@@ -572,9 +531,8 @@ export default function ContactPage() {
                           value={formData.message}
                           onChange={handleInputChange}
                           rows={6}
-                          className={`w-full px-4 py-3 bg-gray-700/50 border ${
-                            formErrors.message ? "border-red-500" : "border-gray-600"
-                          } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300 resize-none`}
+                          className={`w-full px-4 py-3 bg-gray-700/50 border ${formErrors.message ? "border-red-500" : "border-gray-600"
+                            } rounded-xl text-white placeholder:text-gray-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all duration-300 resize-none`}
                           placeholder="Mô tả chi tiết tình huống, vấn đề pháp lý bạn đang gặp phải. Thông tin càng chi tiết, chúng tôi càng có thể hỗ trợ bạn tốt hơn."
                         />
                         {formErrors.message && <p className="text-red-500 text-xs mt-1">{formErrors.message}</p>}
@@ -634,17 +592,17 @@ export default function ContactPage() {
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      Hỗ trợ khẩn cấp
+                      Hỗ trợ ưu tiên
                     </h4>
-                    <p className="text-gray-300 text-sm mb-4">Cần tư vấn gấp? Liên hệ ngay:</p>
+                    <p className="text-gray-300 text-sm mb-4">Cần tư vấn gấp? Hãy sử dụng:</p>
                     <div className="space-y-3">
                       <div className="flex items-center">
-                        <span className="text-amber-400 font-bold text-lg">1900-BASICO</span>
+                        <span className="text-amber-400 font-bold text-lg">Email & Video Call</span>
                       </div>
                       <div className="text-gray-400 text-sm">
-                        <p>• Tư vấn miễn phí 24/7</p>
-                        <p>• Hỗ trợ khẩn cấp</p>
-                        <p>• Đặt lịch hẹn nhanh</p>
+                        <p>• Email ưu tiên: urgent@basico.vn</p>
+                        <p>• Video call khẩn cấp</p>
+                        <p>• Phản hồi trong 30 phút</p>
                       </div>
                     </div>
                   </div>
@@ -677,12 +635,8 @@ export default function ContactPage() {
                         <span className="text-gray-300">Email: Trong 2 giờ</span>
                       </div>
                       <div className="flex items-center">
-                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-3"></div>
-                        <span className="text-gray-300">Điện thoại: Ngay lập tức</span>
-                      </div>
-                      <div className="flex items-center">
                         <div className="w-2 h-2 bg-blue-400 rounded-full mr-3"></div>
-                        <span className="text-gray-300">Chat: Trong 15 phút</span>
+                        <span className="text-gray-300">Video call: Theo lịch hẹn</span>
                       </div>
                     </div>
                   </div>
@@ -706,11 +660,10 @@ export default function ContactPage() {
                     <button
                       key={office.id}
                       onClick={() => setSelectedOffice(office.id)}
-                      className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                        selectedOffice === office.id
+                      className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${selectedOffice === office.id
                           ? "bg-amber-500 text-gray-900"
                           : "text-gray-400 hover:text-white hover:bg-gray-700/50"
-                      }`}
+                        }`}
                     >
                       {office.name.split(" ")[2]}
                     </button>
@@ -890,9 +843,8 @@ export default function ContactPage() {
                       >
                         <span className="font-semibold text-white text-lg">{faq.question}</span>
                         <svg
-                          className={`w-6 h-6 text-amber-400 transform transition-transform duration-300 ${
-                            openFaq === index ? "rotate-180" : ""
-                          }`}
+                          className={`w-6 h-6 text-amber-400 transform transition-transform duration-300 ${openFaq === index ? "rotate-180" : ""
+                            }`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -912,11 +864,11 @@ export default function ContactPage() {
             </div>
           </section>
 
-          
+
         </>
       )}
 
-    
+
       {/* Scroll to top button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

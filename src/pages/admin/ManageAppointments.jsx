@@ -203,7 +203,7 @@ const ManageAppointments = () => {
     // Sidebar items
     const sidebarItems = [
         { id: "dashboard", label: "Dashboard", icon: Home, path: "/admin" },
-        { id: "users", label: "Quản lý người dùng", icon: Users, path: "/admin/manageCustomer" },
+        { id: "users", label: "Quản lý khách", icon: Users, path: "/admin/manageCustomer" },
         { id: "lawyers", label: "Quản lý luật sư", icon: Users, path: "/admin/lawyers" },
         { id: "appointments", label: "Quản lý lịch hẹn", icon: Calendar, path: "/admin/appointments" },
         { id: "services", label: "Quản lý dịch vụ", icon: FileText, path: "/admin/services" },
@@ -258,7 +258,7 @@ const ManageAppointments = () => {
         switch (status) {
             case "confirmed":
                 return "Đã xác nhận"
-           
+
             case "completed":
                 return "Hoàn thành"
             case "cancelled":
@@ -741,7 +741,7 @@ const ManageAppointments = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
                         <StatCard title="Tổng lịch hẹn" value={stats.total} icon={Calendar} color="blue" trend={12} />
                         <StatCard title="Đã xác nhận" value={stats.confirmed} icon={CheckCircle} color="blue" trend={8} />
-                       
+
                         <StatCard title="Hoàn thành" value={stats.completed} icon={CheckCircle} color="green" trend={15} />
                         <StatCard title="Đã hủy" value={stats.cancelled} icon={XCircle} color="red" trend={-3} />
                         <StatCard
@@ -788,7 +788,7 @@ const ManageAppointments = () => {
                                     >
                                         <option value="all">Tất cả trạng thái</option>
                                         <option value="confirmed">Đã xác nhận</option>
-                                      
+
                                         <option value="completed">Hoàn thành</option>
                                         <option value="cancelled">Đã hủy</option>
                                     </select>
@@ -981,7 +981,7 @@ const ManageAppointments = () => {
                                                         onChange={(e) => handleStatusChange(appointment.id, e.target.value)}
                                                         className={`px-3 py-1 rounded-full text-xs font-medium border focus:ring-2 focus:ring-blue-500 focus:outline-none ${getStatusColor(appointment.status)}`}
                                                     >
-                                                       
+
                                                         <option value="confirmed">Đã xác nhận</option>
                                                         <option value="completed">Hoàn thành</option>
                                                         <option value="cancelled">Đã hủy</option>

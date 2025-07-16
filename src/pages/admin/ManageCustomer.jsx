@@ -5,12 +5,9 @@ import { useNavigate } from "react-router-dom"
 import {
   Users,
   Search,
-  Plus,
   Eye,
   Edit,
   Trash2,
-  Download,
-  Upload,
   Mail,
   Phone,
   MapPin,
@@ -22,7 +19,6 @@ import {
   Shield,
   Menu,
   X,
-  Bell,
   Home,
   FileText,
   BarChart3,
@@ -33,10 +29,6 @@ const ManageCustomer = () => {
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const [filterRole, setFilterRole] = useState("all")
-  const [filterStatus, setFilterStatus] = useState("all")
-  const [sortBy, setSortBy] = useState("name")
-  const [sortOrder, setSortOrder] = useState("asc")
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [selectedUsers, setSelectedUsers] = useState([])
@@ -135,7 +127,7 @@ const ManageCustomer = () => {
 
   const sidebarItems = [
     { id: "dashboard", label: "Dashboard", icon: Home, path: "/admin" },
-    { id: "users", label: "Quản lý người dùng", icon: Users, path: "/admin/manageCustomer" },
+    { id: "users", label: "Quản lý khách", icon: Users, path: "/admin/manageCustomer" },
     { id: "lawyers", label: "Quản lý luật sư", icon: Users, path: "/admin/lawyers" },
     { id: "appointments", label: "Quản lý lịch hẹn", icon: Calendar, path: "/admin/appointments" },
     { id: "services", label: "Quản lý dịch vụ", icon: FileText, path: "/admin/services" },
@@ -143,31 +135,15 @@ const ManageCustomer = () => {
     { id: "settings", label: "Cài đặt", icon: Settings, path: "/admin/settings" },
   ]
 
-  // Filter and sort users
+  // Filter users - only show clients
   const filteredUsers = users
+    .filter((user) => user.role === "client") // Only show clients
     .filter((user) => {
       const matchesSearch =
         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.phone.includes(searchTerm)
-      const matchesRole = filterRole === "all" || user.role === filterRole
-      const matchesStatus = filterStatus === "all" || user.status === filterStatus
-      return matchesSearch && matchesRole && matchesStatus
-    })
-    .sort((a, b) => {
-      let aValue = a[sortBy]
-      let bValue = b[sortBy]
-
-      if (sortBy === "totalSpent" || sortBy === "totalAppointments" || sortBy === "rating") {
-        aValue = Number(aValue)
-        bValue = Number(bValue)
-      }
-
-      if (sortOrder === "asc") {
-        return aValue > bValue ? 1 : -1
-      } else {
-        return aValue < bValue ? 1 : -1
-      }
+      return matchesSearch
     })
 
   // Pagination
@@ -226,10 +202,6 @@ const ManageCustomer = () => {
     setShowModal(true)
   }
 
-  const handleStatusChange = (userId, newStatus) => {
-    setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: newStatus } : user)))
-  }
-
   const handleDeleteUser = (userId) => {
     setUsers((prev) => prev.filter((user) => user.id !== userId))
     setShowModal(false)
@@ -244,9 +216,8 @@ const ManageCustomer = () => {
           <div className="p-6 border-b border-gray-700">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold text-white">
-                {modalType === "add" && "Thêm người dùng mới"}
-                {modalType === "edit" && "Chỉnh sửa người dùng"}
-                {modalType === "view" && "Chi tiết người dùng"}
+                {modalType === "edit" && "Chỉnh sửa khách hàng"}
+                {modalType === "view" && "Chi tiết khách hàng"}
                 {modalType === "delete" && "Xác nhận xóa"}
               </h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
@@ -261,9 +232,9 @@ const ManageCustomer = () => {
                 <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trash2 className="w-8 h-8 text-red-400" />
                 </div>
-                <h4 className="text-lg font-semibold text-white mb-2">Xóa người dùng</h4>
+                <h4 className="text-lg font-semibold text-white mb-2">Xóa khách hàng</h4>
                 <p className="text-gray-400 mb-6">
-                  Bạn có chắc chắn muốn xóa người dùng{" "}
+                  Bạn có chắc chắn muốn xóa khách hàng{" "}
                   <span className="text-white font-medium">{selectedUser?.name}</span>? Hành động này không thể hoàn
                   tác.
                 </p>
@@ -296,7 +267,7 @@ const ManageCustomer = () => {
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium border ${getRoleColor(selectedUser.role)}`}
                       >
-                        {selectedUser.role === "lawyer" ? "Luật sư" : "Khách hàng"}
+                        Khách hàng
                       </span>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(selectedUser.status)}`}
@@ -381,7 +352,7 @@ const ManageCustomer = () => {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Họ và tên</label>
                     <input
                       type="text"
-                      defaultValue={modalType === "edit" ? selectedUser?.name : ""}
+                      defaultValue={selectedUser?.name || ""}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                       placeholder="Nhập họ và tên"
                     />
@@ -390,7 +361,7 @@ const ManageCustomer = () => {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                     <input
                       type="email"
-                      defaultValue={modalType === "edit" ? selectedUser?.email : ""}
+                      defaultValue={selectedUser?.email || ""}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                       placeholder="Nhập email"
                     />
@@ -399,27 +370,16 @@ const ManageCustomer = () => {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Số điện thoại</label>
                     <input
                       type="tel"
-                      defaultValue={modalType === "edit" ? selectedUser?.phone : ""}
+                      defaultValue={selectedUser?.phone || ""}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                       placeholder="Nhập số điện thoại"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Vai trò</label>
-                    <select
-                      defaultValue={modalType === "edit" ? selectedUser?.role : "client"}
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="client">Khách hàng</option>
-                      <option value="lawyer">Luật sư</option>
-                      <option value="admin">Admin</option>
-                    </select>
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Địa chỉ</label>
                   <textarea
-                    defaultValue={modalType === "edit" ? selectedUser?.address : ""}
+                    defaultValue={selectedUser?.address || ""}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                     rows="3"
                     placeholder="Nhập địa chỉ"
@@ -436,7 +396,7 @@ const ManageCustomer = () => {
                     onClick={() => setShowModal(false)}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                   >
-                    {modalType === "add" ? "Thêm" : "Lưu"}
+                    Lưu
                   </button>
                 </div>
               </div>
@@ -528,8 +488,8 @@ const ManageCustomer = () => {
                 <Menu className="w-6 h-6" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-white">Quản lý người dùng</h1>
-                <p className="text-gray-400">Quản lý tất cả người dùng trong hệ thống</p>
+                <h1 className="text-2xl font-bold text-white">Quản lý khách hàng</h1>
+                <p className="text-gray-400">Quản lý tất cả khách hàng trong hệ thống</p>
               </div>
             </div>
 
@@ -547,29 +507,11 @@ const ManageCustomer = () => {
         {/* Content */}
         <main className="p-6">
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm">Tổng người dùng</p>
-                  <p className="text-2xl font-bold text-white">{users.length}</p>
-                </div>
-                <Users className="w-8 h-8 text-blue-400" />
-              </div>
-            </div>
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Luật sư</p>
-                  <p className="text-2xl font-bold text-white">{users.filter((u) => u.role === "lawyer").length}</p>
-                </div>
-                <UserCheck className="w-8 h-8 text-green-400" />
-              </div>
-            </div>
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Khách hàng</p>
+                  <p className="text-gray-400 text-sm">Tổng khách hàng</p>
                   <p className="text-2xl font-bold text-white">{users.filter((u) => u.role === "client").length}</p>
                 </div>
                 <Users className="w-8 h-8 text-purple-400" />
@@ -579,9 +521,18 @@ const ManageCustomer = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm">Đang hoạt động</p>
-                  <p className="text-2xl font-bold text-white">{users.filter((u) => u.status === "active").length}</p>
+                  <p className="text-2xl font-bold text-white">{users.filter((u) => u.role === "client" && u.status === "active").length}</p>
                 </div>
                 <UserCheck className="w-8 h-8 text-green-400" />
+              </div>
+            </div>
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm">Tổng chi tiêu</p>
+                  <p className="text-2xl font-bold text-white">{formatCurrency(users.filter((u) => u.role === "client").reduce((sum, u) => sum + u.totalSpent, 0))}</p>
+                </div>
+                <Star className="w-8 h-8 text-yellow-400" />
               </div>
             </div>
           </div>
@@ -594,31 +545,16 @@ const ManageCustomer = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
-                    placeholder="Tìm kiếm người dùng..."
+                    placeholder="Tìm kiếm khách hàng..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
-                <select
-                  value={filterRole}
-                  onChange={(e) => setFilterRole(e.target.value)}
-                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                >
-                  <option value="all">Tất cả vai trò</option>
-                  <option value="client">Khách hàng</option>
-                  <option value="lawyer">Luật sư</option>
-                </select>
-               
+
               </div>
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handleAction("add")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Thêm người dùng</span>
-                </button>
+                {/* Removed add user button */}
               </div>
             </div>
           </div>
@@ -638,12 +574,12 @@ const ManageCustomer = () => {
                       />
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Người dùng
+                      Khách hàng
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Vai trò
+                      Trạng thái
                     </th>
-                    
+
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Lịch hẹn
                     </th>
@@ -688,15 +624,19 @@ const ManageCustomer = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium border ${getRoleColor(user.role)}`}
+                          className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(user.status)}`}
                         >
-                          {user.role === "lawyer" ? "Luật sư" : user.role === "client" ? "Khách hàng" : "Admin"}
+                          {user.status === "active"
+                            ? "Hoạt động"
+                            : user.status === "pending"
+                              ? "Chờ duyệt"
+                              : "Không hoạt động"}
                         </span>
                       </td>
-                     
+
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{user.totalAppointments}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {user.role === "client" ? formatCurrency(user.totalSpent) : "-"}
+                        {formatCurrency(user.totalSpent)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-1">
@@ -752,7 +692,7 @@ const ManageCustomer = () => {
                   <option value={20}>20</option>
                   <option value={50}>50</option>
                 </select>
-                <span className="text-sm text-gray-400">trên tổng số {filteredUsers.length} người dùng</span>
+                <span className="text-sm text-gray-400">trên tổng số {filteredUsers.length} khách hàng</span>
               </div>
 
               <div className="flex items-center space-x-2">

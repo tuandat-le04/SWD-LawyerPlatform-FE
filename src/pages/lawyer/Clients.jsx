@@ -227,16 +227,6 @@ export default function LawyerClients() {
                                 <p className="text-sm text-gray-400">Quản lý thông tin và lịch sử khách hàng</p>
                             </div>
                         </div>
-
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={() => setShowAddModal(true)}
-                                className="flex items-center space-x-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-lg font-medium transition-colors"
-                            >
-                                <Plus className="h-4 w-4" />
-                                <span>Thêm khách hàng</span>
-                            </button>
-                        </div>
                     </div>
                 </div>
             </header>
