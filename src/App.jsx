@@ -62,8 +62,6 @@ export default function App() {
                 <Route path="/lawyer/appointments" element={<Appointment />} />
                 <Route path="/lawyer/clients" element={<Clients />} />
                 <Route path="/lawyer/settings" element={<Settings />} />
-
-
             </Routes>
         </Router>
     )

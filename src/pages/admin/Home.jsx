@@ -96,7 +96,7 @@ const AdminHome = () => {
 
     const sidebarItems = [
         { id: "dashboard", label: "Dashboard", icon: Home, path: "/admin" },
-        { id: "users", label: "Quản lý người dùng", icon: Users, path: "/admin/manageCustomer" },
+        { id: "users", label: "Quản lý khách", icon: Users, path: "/admin/manageCustomer" },
         { id: "lawyers", label: "Quản lý luật sư", icon: Users, path: "/admin/lawyers" },
         { id: "appointments", label: "Quản lý lịch hẹn", icon: Calendar, path: "/admin/appointments" },
         { id: "services", label: "Quản lý dịch vụ", icon: FileText, path: "/admin/services" },

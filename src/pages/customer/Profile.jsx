@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import * as Yup from "yup"
 import {
     ArrowLeft,
     User,
@@ -27,172 +29,282 @@ export default function LawyerSettings() {
     const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState("profile")
     const [showPassword, setShowPassword] = useState(false)
-    const [darkMode, setDarkMode] = useState(true)
-    const [notifications, setNotifications] = useState({
-        email: true,
-        push: true,
-        sms: false,
-        appointments: true,
-        messages: true,
-        payments: true,
+
+    // Validation schemas
+    const profileValidationSchema = Yup.object({
+        name: Yup.string()
+            .required("Họ và tên là bắt buộc")
+            .min(2, "Họ và tên phải có ít nhất 2 ký tự")
+            .max(100, "Họ và tên không được vượt quá 100 ký tự")
+            .matches(/^[a-zA-ZÀ-ỹ\s]+$/, "Họ và tên chỉ được chứa chữ cái và khoảng trắng"),
+        email: Yup.string()
+            .email("Email không hợp lệ")
+            .required("Email là bắt buộc"),
+        phone: Yup.string()
+            .required("Số điện thoại là bắt buộc")
+            .matches(/^[0-9]{10}$/, "Số điện thoại phải có đúng 10 chữ số"),
+    })
+
+    const passwordValidationSchema = Yup.object({
+        currentPassword: Yup.string()
+            .required("Mật khẩu hiện tại là bắt buộc"),
+        newPassword: Yup.string()
+            .required("Mật khẩu mới là bắt buộc")
+            .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số"),
+        confirmPassword: Yup.string()
+            .required("Xác nhận mật khẩu là bắt buộc")
+            .oneOf([Yup.ref('newPassword')], "Mật khẩu xác nhận không khớp")
     })
 
     const [profile, setProfile] = useState({
-        firstName: "Nguyễn",
-        lastName: "Văn An",
+        name: "Nguyễn Văn An",
         email: "nguyenvanan@lawfirm.com",
-        phone: "+84 901 234 567",
-        address: "123 Đường Lê Lợi, Quận 1, TP.HCM",
-       
-       
-       
+        phone: "0901234567",
     })
 
-    
+
 
     const tabs = [
         { id: "profile", label: "Hồ sơ cá nhân", icon: User },
         { id: "security", label: "Bảo mật", icon: Shield },
-      
         { id: "billing", label: "Lịch sử", icon: CreditCard },
     ]
 
-    const handleSave = () => {
+    const handleSave = (values, { setSubmitting }) => {
         // Simulate API call
-        console.log("Saving settings...")
-        alert("Cài đặt đã được lưu thành công!")
+        console.log("Saving profile data:", values)
+
+        setTimeout(() => {
+            setProfile(values)
+            setSubmitting(false)
+            alert("Cài đặt đã được lưu thành công!")
+        }, 1000)
     }
 
-    const handleProfileChange = (field, value) => {
-        setProfile((prev) => ({ ...prev, [field]: value }))
-    }
+    const handlePasswordChange = (values, { setSubmitting, resetForm }) => {
+        // Simulate API call
+        console.log("Changing password:", values)
 
-    const handleWorkingHoursChange = (day, field, value) => {
-        setWorkingHours((prev) => ({
-            ...prev,
-            [day]: { ...prev[day], [field]: value },
-        }))
+        setTimeout(() => {
+            setSubmitting(false)
+            resetForm()
+            alert("Mật khẩu đã được thay đổi thành công!")
+        }, 1000)
     }
 
     const renderProfileTab = () => (
-        <div className="space-y-6">
-            {/* Avatar Section */}
-            <div className="flex items-center space-x-6">
-                <div className="relative">
-                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                        {profile.firstName[0]}
-                        {profile.lastName[0]}
+        <Formik
+            initialValues={profile}
+            validationSchema={profileValidationSchema}
+            onSubmit={handleSave}
+            enableReinitialize={true}
+        >
+            {({ values, errors, touched, isSubmitting }) => (
+                <Form className="space-y-6">
+                    {/* Avatar Section */}
+                    <div className="flex items-center space-x-6">
+                        <div className="relative">
+                            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                {values.name.split(' ').map(word => word[0]).join('').slice(0, 2)}
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-semibold text-white">
+                                {values.name}
+                            </h3>
+                            <p className="text-gray-400">Khách hàng</p>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <h3 className="text-xl font-semibold text-white">
-                        {profile.firstName} {profile.lastName}
-                    </h3>
-                    <p className="text-gray-400">{profile.specialization}</p>
-                  
-                </div>
-            </div>
 
-            {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Họ</label>
-                    <input
-                        type="text"
-                        value={profile.firstName}
-                        onChange={(e) => handleProfileChange("firstName", e.target.value)}
-                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Tên</label>
-                    <input
-                        type="text"
-                        value={profile.lastName}
-                        onChange={(e) => handleProfileChange("lastName", e.target.value)}
-                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                    <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="email"
-                            value={profile.email}
-                            onChange={(e) => handleProfileChange("email", e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
+                    {/* Personal Information */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                Họ và tên <span className="text-red-400">*</span>
+                            </label>
+                            <Field
+                                name="name"
+                                type="text"
+                                className={`w-full bg-gray-800 border rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.name && touched.name
+                                    ? 'border-red-500'
+                                    : 'border-gray-700'
+                                    }`}
+                            />
+                            <ErrorMessage
+                                name="name"
+                                component="p"
+                                className="text-red-400 text-sm mt-1"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                Email <span className="text-red-400">*</span>
+                            </label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                <Field
+                                    name="email"
+                                    type="email"
+                                    className={`w-full bg-gray-800 border rounded-lg pl-10 pr-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.email && touched.email
+                                        ? 'border-red-500'
+                                        : 'border-gray-700'
+                                        }`}
+                                />
+                            </div>
+                            <ErrorMessage
+                                name="email"
+                                component="p"
+                                className="text-red-400 text-sm mt-1"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                                Số điện thoại <span className="text-red-400">*</span>
+                            </label>
+                            <div className="relative">
+                                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                <Field
+                                    name="phone"
+                                    type="tel"
+                                    placeholder="0901234567"
+                                    maxLength="10"
+                                    className={`w-full bg-gray-800 border rounded-lg pl-10 pr-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.phone && touched.phone
+                                        ? 'border-red-500'
+                                        : 'border-gray-700'
+                                        }`}
+                                    onKeyPress={(e) => {
+                                        // Chỉ cho phép nhập số
+                                        if (!/[0-9]/.test(e.key)) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <ErrorMessage
+                                name="phone"
+                                component="p"
+                                className="text-red-400 text-sm mt-1"
+                            />
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Số điện thoại</label>
-                    <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="tel"
-                            value={profile.phone}
-                            onChange={(e) => handleProfileChange("phone", e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
+
+                    {/* Submit Button */}
+                    <div className="flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                        >
+                            <Save className="w-4 h-4" />
+                            <span>{isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}</span>
+                        </button>
                     </div>
-                </div>
-            </div>
-
-            
-
-           
-        </div>
+                </Form>
+            )}
+        </Formik>
     )
 
     const renderSecurityTab = () => (
         <div className="space-y-6">
             <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Đổi mật khẩu</h3>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Mật khẩu hiện tại</label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
-                            />
+                <Formik
+                    initialValues={{
+                        currentPassword: "",
+                        newPassword: "",
+                        confirmPassword: ""
+                    }}
+                    validationSchema={passwordValidationSchema}
+                    onSubmit={handlePasswordChange}
+                >
+                    {({ errors, touched, isSubmitting }) => (
+                        <Form className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                    Mật khẩu hiện tại <span className="text-red-400">*</span>
+                                </label>
+                                <div className="relative">
+                                    <Field
+                                        name="currentPassword"
+                                        type={showPassword ? "text" : "password"}
+                                        className={`w-full bg-gray-700 border rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 ${errors.currentPassword && touched.currentPassword
+                                            ? 'border-red-500'
+                                            : 'border-gray-600'
+                                            }`}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
+                                <ErrorMessage
+                                    name="currentPassword"
+                                    component="p"
+                                    className="text-red-400 text-sm mt-1"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                    Mật khẩu mới <span className="text-red-400">*</span>
+                                </label>
+                                <Field
+                                    name="newPassword"
+                                    type="password"
+                                    className={`w-full bg-gray-700 border rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.newPassword && touched.newPassword
+                                        ? 'border-red-500'
+                                        : 'border-gray-600'
+                                        }`}
+                                />
+                                <ErrorMessage
+                                    name="newPassword"
+                                    component="p"
+                                    className="text-red-400 text-sm mt-1"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                    Xác nhận mật khẩu mới <span className="text-red-400">*</span>
+                                </label>
+                                <Field
+                                    name="confirmPassword"
+                                    type="password"
+                                    className={`w-full bg-gray-700 border rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.confirmPassword && touched.confirmPassword
+                                        ? 'border-red-500'
+                                        : 'border-gray-600'
+                                        }`}
+                                />
+                                <ErrorMessage
+                                    name="confirmPassword"
+                                    component="p"
+                                    className="text-red-400 text-sm mt-1"
+                                />
+                            </div>
+
                             <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
                             >
-                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                {isSubmitting ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
                             </button>
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Mật khẩu mới</label>
-                        <input
-                            type="password"
-                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Xác nhận mật khẩu mới</label>
-                        <input
-                            type="password"
-                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                    </div>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        Cập nhật mật khẩu
-                    </button>
-                </div>
+                        </Form>
+                    )}
+                </Formik>
             </div>
         </div>
     )
 
-    
+
     const renderBillingTab = () => (
         <div className="space-y-6">
-           
-
             <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Lịch sử giao dịch</h3>
                 <div className="space-y-3">
@@ -224,47 +336,6 @@ export default function LawyerSettings() {
         </div>
     )
 
-    const renderPreferencesTab = () => (
-        <div className="space-y-6">
-            <div className="bg-gray-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Giao diện</h3>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        {darkMode ? <Moon className="w-5 h-5 text-blue-400" /> : <Sun className="w-5 h-5 text-yellow-400" />}
-                        <span className="text-gray-300">Chế độ tối</span>
-                    </div>
-                    <button
-                        onClick={() => setDarkMode(!darkMode)}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${darkMode ? "bg-blue-600" : "bg-gray-600"
-                            }`}
-                    >
-                        <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${darkMode ? "translate-x-6" : "translate-x-1"
-                                }`}
-                        />
-                    </button>
-                </div>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Ngôn ngữ</h3>
-                <select className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <option>Tiếng Việt</option>
-                    <option>English</option>
-                </select>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Múi giờ</h3>
-                <select className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <option>GMT+7 (Việt Nam)</option>
-                    <option>GMT+0 (UTC)</option>
-                    <option>GMT-5 (EST)</option>
-                </select>
-            </div>
-        </div>
-    )
-
     return (
         <div className="min-h-screen bg-gray-900">
             {/* Header */}
@@ -273,20 +344,13 @@ export default function LawyerSettings() {
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center space-x-4">
                             <button
-                                onClick={() => navigate("/lawyer/home")}
+                                onClick={() => navigate("/")}
                                 className="text-gray-400 hover:text-white transition-colors"
                             >
                                 <ArrowLeft className="w-6 h-6" />
                             </button>
                             <h1 className="text-xl font-semibold text-white">Cài đặt</h1>
                         </div>
-                        <button
-                            onClick={handleSave}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                        >
-                            <Save className="w-4 h-4" />
-                            <span>Lưu thay đổi</span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -321,11 +385,8 @@ export default function LawyerSettings() {
                     <div className="flex-1">
                         <div className="bg-gray-800 rounded-lg p-6">
                             {activeTab === "profile" && renderProfileTab()}
-                            {activeTab === "notifications" && renderNotificationsTab()}
                             {activeTab === "security" && renderSecurityTab()}
-                            {activeTab === "schedule" && renderScheduleTab()}
                             {activeTab === "billing" && renderBillingTab()}
-                            {activeTab === "preferences" && renderPreferencesTab()}
                         </div>
                     </div>
                 </div>

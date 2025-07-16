@@ -158,8 +158,8 @@ const ManageServices = () => {
 
     const sidebarItems = [
         { id: "dashboard", label: "Dashboard", icon: Home, path: "/admin" },
-        { id: "users", label: "Quản lý người dùng", icon: Users, path: "/admin/manageCustomer" },
-        { id: "lawyers", label: "Quản lý luật sư", icon: UserCheck, path: "/admin/lawyers" },
+        { id: "users", label: "Quản lý khách", icon: Users, path: "/admin/manageCustomer" },
+        { id: "lawyers", label: "Quản lý luật sư", icon: Users, path: "/admin/lawyers" },
         { id: "appointments", label: "Quản lý lịch hẹn", icon: Calendar, path: "/admin/appointments" },
         { id: "services", label: "Quản lý dịch vụ", icon: FileText, path: "/admin/services" },
         { id: "reports", label: "Báo cáo", icon: BarChart3, path: "/admin/reports" },
@@ -493,7 +493,7 @@ const ManageServices = () => {
                                     >
                                         <option value="all">Tất cả trạng thái</option>
                                         <option value="active">Hoạt động</option>
-                                        
+
                                         <option value="inactive">Không hoạt động</option>
                                     </select>
 
@@ -535,7 +535,7 @@ const ManageServices = () => {
                                         >
                                             Kích hoạt
                                         </button>
-                                    
+
                                         <button
                                             onClick={() => handleBulkAction("delete")}
                                             className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
@@ -646,7 +646,7 @@ const ManageServices = () => {
                                                             )}`}
                                                         >
                                                             <option value="active">Hoạt động</option>
-                                                          
+
                                                             <option value="inactive">Không hoạt động</option>
                                                         </select>
                                                     </td>
@@ -737,9 +737,9 @@ const ManageServices = () => {
                                         <span
                                             className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedService.status)}`}
                                         >
-                                           {selectedService.status === "active"
-                                           ? "Hoạt động"
-                                           : "Không hoạt động"}
+                                            {selectedService.status === "active"
+                                                ? "Hoạt động"
+                                                : "Không hoạt động"}
                                         </span>
                                         <span className="text-sm text-gray-400">Danh mục: {selectedService.category}</span>
                                     </div>
@@ -896,7 +896,7 @@ const ManageServices = () => {
                                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                                 >
                                     <option value="active">Hoạt động</option>
-                                    
+
                                     <option value="inactive">Không hoạt động</option>
                                 </select>
                             </div>

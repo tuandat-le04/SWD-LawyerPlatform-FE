@@ -47,7 +47,6 @@ const servicesData = [
         cases: 1250,
         successRate: "98%",
         color: "blue",
-        popular: true,
     },
     {
         id: 2,
@@ -63,7 +62,6 @@ const servicesData = [
         cases: 890,
         successRate: "95%",
         color: "red",
-        popular: false,
     },
     {
         id: 3,
@@ -79,7 +77,6 @@ const servicesData = [
         cases: 780,
         successRate: "97%",
         color: "pink",
-        popular: false,
     },
     {
         id: 4,
@@ -101,7 +98,6 @@ const servicesData = [
         cases: 1560,
         successRate: "99%",
         color: "green",
-        popular: true,
     },
     {
         id: 5,
@@ -117,7 +113,6 @@ const servicesData = [
         cases: 920,
         successRate: "96%",
         color: "orange",
-        popular: false,
     },
     {
         id: 6,
@@ -133,7 +128,6 @@ const servicesData = [
         cases: 650,
         successRate: "94%",
         color: "purple",
-        popular: false,
     },
     {
         id: 7,
@@ -155,7 +149,6 @@ const servicesData = [
         cases: 580,
         successRate: "93%",
         color: "gray",
-        popular: false,
     },
 ]
 
@@ -232,7 +225,7 @@ const faqs = [
 export default function ServicesPage() {
     const [selectedCategory, setSelectedCategory] = useState("all")
     const [searchTerm, setSearchTerm] = useState("")
-    const [sortBy, setSortBy] = useState("popular")
+    const [sortBy, setSortBy] = useState("rating")
     const [openFaq, setOpenFaq] = useState(null)
     const [isVisible, setIsVisible] = useState(false)
     const navigate = useNavigate()
@@ -280,8 +273,6 @@ export default function ServicesPage() {
 
     const sortedServices = [...filteredServices].sort((a, b) => {
         switch (sortBy) {
-            case "popular":
-                return b.reviews - a.reviews
             case "rating":
                 return b.rating - a.rating
             case "price-low":
@@ -362,21 +353,6 @@ export default function ServicesPage() {
                                     </select>
                                     <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                                 </div>
-
-                                {/* Sort */}
-                                <div className="relative">
-                                    <select
-                                        value={sortBy}
-                                        onChange={(e) => setSortBy(e.target.value)}
-                                        className="px-6 py-4 bg-gray-700/50 border border-gray-600 rounded-2xl text-white focus:border-amber-500 focus:outline-none appearance-none pr-12"
-                                    >
-                                        <option value="popular">Phổ biến nhất</option>
-                                        <option value="rating">Đánh giá cao</option>
-                                        <option value="price-low">Giá thấp đến cao</option>
-                                        <option value="price-high">Giá cao đến thấp</option>
-                                    </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -400,13 +376,6 @@ export default function ServicesPage() {
                                 className="group relative bg-gray-800 border border-gray-700 rounded-3xl overflow-hidden hover:border-amber-500/50 transition-all duration-500 transform hover:-translate-y-2"
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
-                                {/* Popular Badge */}
-                                {service.popular && (
-                                    <div className="absolute top-4 right-4 z-10">
-                                        <div className="bg-amber-500 text-gray-900 px-3 py-1 rounded-full text-xs font-bold">Phổ biến</div>
-                                    </div>
-                                )}
-
                                 {/* Service Header */}
                                 <div className="p-8 pb-4">
                                     <div

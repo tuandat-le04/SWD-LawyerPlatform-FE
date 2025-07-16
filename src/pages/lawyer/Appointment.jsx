@@ -8,7 +8,6 @@ import {
     Calendar,
     Clock,
     User,
-    Phone,
     Video,
     MapPin,
     Search,
@@ -62,24 +61,6 @@ const mockAppointments = [
         priority: "medium",
     },
     {
-        id: 3,
-        clientName: "Lê Minh Cường",
-        clientAvatar: "../public/images/avatar.png",
-        clientPhone: "0923456789",
-        clientEmail: "leminhcuong@email.com",
-        type: "phone",
-        date: "2025-01-18",
-        time: "09:00",
-        duration: 30,
-        status: "confirmed",
-        topic: "Luật Bất động sản - Mua bán nhà đất",
-        description: "Tư vấn về quy trình mua bán nhà đất và các rủi ro pháp lý",
-        fee: 300000,
-        location: "Cuộc gọi điện thoại",
-        notes: "Khách hàng mới, cần giải thích chi tiết",
-        priority: "low",
-    },
-    {
         id: 4,
         clientName: "Phạm Thị Dung",
         clientAvatar: "../public/images/avatar.png",
@@ -115,24 +96,6 @@ const mockAppointments = [
         notes: "Khách hàng VIP, cần chuẩn bị tài liệu chi tiết",
         priority: "high",
     },
-    {
-        id: 6,
-        clientName: "Vũ Thị Hoa",
-        clientAvatar: "../public/images/avatar.png",
-        clientPhone: "0956789012",
-        clientEmail: "vuthihoa@email.com",
-        type: "phone",
-        date: "2025-01-19",
-        time: "14:00",
-        duration: 45,
-        status: "cancelled",
-        topic: "Luật Gia đình - Nuôi con sau ly hôn",
-        description: "Tư vấn về quyền nuôi con và nghĩa vụ cấp dưỡng",
-        fee: 400000,
-        location: "Cuộc gọi điện thoại",
-        notes: "Khách hàng hủy do bận việc đột xuất",
-        priority: "low",
-    },
 ]
 
 const typeConfig = {
@@ -147,12 +110,6 @@ const typeConfig = {
         icon: User,
         color: "text-amber-400",
         bgColor: "bg-amber-500/20",
-    },
-    phone: {
-        label: "Điện thoại",
-        icon: Phone,
-        color: "text-green-400",
-        bgColor: "bg-green-500/20",
     },
 }
 
@@ -209,7 +166,6 @@ export default function LawyerAppointments() {
     const [statusFilter, setStatusFilter] = useState("all")
     const [typeFilter, setTypeFilter] = useState("all")
     const [dateFilter, setDateFilter] = useState("all")
-    const [viewMode, setViewMode] = useState("list") // list, calendar
     const [selectedAppointment, setSelectedAppointment] = useState(null)
     const [showDetails, setShowDetails] = useState(false)
 
@@ -318,13 +274,6 @@ export default function LawyerAppointments() {
                                 <h1 className="text-2xl font-bold text-white">Quản lý Lịch hẹn</h1>
                                 <p className="text-sm text-gray-400">Quản lý và theo dõi tất cả lịch hẹn của bạn</p>
                             </div>
-                        </div>
-
-                        <div className="flex items-center space-x-4">
-                            <button className="flex items-center space-x-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-lg font-medium transition-colors">
-                                <Plus className="h-4 w-4" />
-                                <span>Tạo lịch hẹn mới</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -468,7 +417,6 @@ export default function LawyerAppointments() {
                                     <option value="all">Tất cả loại</option>
                                     <option value="online">Trực tuyến</option>
                                     <option value="offline">Trực tiếp</option>
-                                    <option value="phone">Điện thoại</option>
                                 </select>
 
                                 <select

@@ -206,8 +206,8 @@ export default function ManageLawyers() {
     // Navigation items
     const sidebarItems = [
         { id: "dashboard", label: "Dashboard", icon: Home, path: "/admin" },
-        { id: "users", label: "Quản lý người dùng", icon: Users, path: "/admin/manageCustomer" },
-        { id: "lawyers", label: "Quản lý luật sư", icon: UserCheck, path: "/admin/lawyers" },
+        { id: "users", label: "Quản lý khách", icon: Users, path: "/admin/manageCustomer" },
+        { id: "lawyers", label: "Quản lý luật sư", icon: Users, path: "/admin/lawyers" },
         { id: "appointments", label: "Quản lý lịch hẹn", icon: Calendar, path: "/admin/appointments" },
         { id: "services", label: "Quản lý dịch vụ", icon: FileText, path: "/admin/services" },
         { id: "reports", label: "Báo cáo", icon: BarChart3, path: "/admin/reports" },
@@ -464,7 +464,7 @@ export default function ManageLawyers() {
                                 <div className="mt-6 pt-6 border-t border-gray-700">
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div>
-                                          
+
                                             <select
                                                 value={statusFilter}
                                                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -583,7 +583,7 @@ export default function ManageLawyers() {
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                                 Phí/giờ
                                             </th>
-                                           
+
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                                 Thao tác
                                             </th>
@@ -644,7 +644,7 @@ export default function ManageLawyers() {
                                                     <td className="px-6 py-4">
                                                         <span className="text-sm text-white">{lawyer.hourlyRate.toLocaleString("vi-VN")}đ</span>
                                                     </td>
-                                                   
+
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center space-x-2">
                                                             <button
