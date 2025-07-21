@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowLeft, User, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-// import auth from '../../services/auth';
+import authService from '../../services/auth';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -9,12 +9,15 @@ export default function Register() {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: '',
+        name: '',
         email: '',
         phone: '',
         password: '',
         confirmPassword: ''
     });
+
+    const [errors, setErrors] = useState({});
+    const [submitMessage, setSubmitMessage] = useState('');
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -22,33 +25,90 @@ export default function Register() {
             ...prev,
             [name]: value
         }));
+
+        // Clear error for this field when user starts typing
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
+        }
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.name.trim()) {
+            newErrors.name = 'Vui lòng nhập họ tên';
+        }
+
+        if (!formData.email.trim()) {
+            newErrors.email = 'Vui lòng nhập email';
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = 'Email không hợp lệ';
+        }
+
+        if (!formData.phone.trim()) {
+            newErrors.phone = 'Vui lòng nhập số điện thoại';
+        } else if (!/^(\+84|84|0)[3|5|7|8|9][0-9]{8}$/.test(formData.phone)) {
+            newErrors.phone = 'Số điện thoại không hợp lệ';
+        }
+
+        if (!formData.password) {
+            newErrors.password = 'Vui lòng nhập mật khẩu';
+        } else if (formData.password.length < 6) {
+            newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+        }
+
+        if (!formData.confirmPassword) {
+            newErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu';
+        } else if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            setSubmitMessage('');
+
+            await authService.register(formData);
+
+            setSubmitMessage('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.');
+
+            // Reset form
+            setFormData({
+                name: '',
+                email: '',
+                phone: '',
+                password: '',
+                confirmPassword: ''
+            });
+
+            // Redirect to login after 2 seconds
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
+
+        } catch (error) {
+            setSubmitMessage(error.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleBackClick = () => {
         navigate('/');
     };
-
-    // const handleSubmit = async () => {
-    //     if (formData.password !== formData.confirmPassword) {
-    //         alert('Passwords do not match!');
-    //         return;
-    //     }
-
-    //     try {
-    //         setIsLoading(true);
-    //         const { confirmPassword, ...registrationData } = formData;
-    //         const response = await auth.register(registrationData);
-
-    //         if (response.status === 200) {
-    //             alert('Registration successful! Please check your email to verify your account.');
-    //             navigate('/login');
-    //         }
-    //     } catch (error) {
-    //         alert(error.message || 'Registration failed. Please try again.');
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -78,11 +138,21 @@ export default function Register() {
                     </div>
 
                     {/* Register Form */}
-                    <div className="space-y-6">
-                        {/* Username Field */}
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Success/Error Message */}
+                        {submitMessage && (
+                            <div className={`p-4 rounded-xl text-center ${submitMessage.includes('thành công')
+                                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                    : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                }`}>
+                                {submitMessage}
+                            </div>
+                        )}
+
+                        {/* Name Field */}
                         <div>
-                            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                                Tên người dùng
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                                Họ và tên
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -90,14 +160,17 @@ export default function Register() {
                                 </div>
                                 <input
                                     type="text"
-                                    id="username"
-                                    name="username"
-                                    value={formData.username}
+                                    id="name"
+                                    name="name"
+                                    value={formData.name}
                                     onChange={handleInputChange}
-                                    className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white"
-                                    placeholder="Nhập tên người dùng"
-                                    required
+                                    className={`block w-full pl-10 pr-3 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white ${errors.name ? 'border-red-500' : 'border-gray-600'
+                                        }`}
+                                    placeholder="Nhập họ và tên"
                                 />
+                                {errors.name && (
+                                    <p className="mt-1 text-sm text-red-400">{errors.name}</p>
+                                )}
                             </div>
                         </div>
 
@@ -116,10 +189,13 @@ export default function Register() {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white"
+                                    className={`block w-full pl-10 pr-3 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white ${errors.email ? 'border-red-500' : 'border-gray-600'
+                                        }`}
                                     placeholder="Nhập địa chỉ email"
-                                    required
                                 />
+                                {errors.email && (
+                                    <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+                                )}
                             </div>
                         </div>
 
@@ -138,10 +214,13 @@ export default function Register() {
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleInputChange}
-                                    className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white"
+                                    className={`block w-full pl-10 pr-3 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white ${errors.phone ? 'border-red-500' : 'border-gray-600'
+                                        }`}
                                     placeholder="Nhập số điện thoại"
-                                    required
                                 />
+                                {errors.phone && (
+                                    <p className="mt-1 text-sm text-red-400">{errors.phone}</p>
+                                )}
                             </div>
                         </div>
 
@@ -160,9 +239,9 @@ export default function Register() {
                                     name="password"
                                     value={formData.password}
                                     onChange={handleInputChange}
-                                    className="block w-full pl-10 pr-12 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white"
+                                    className={`block w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white ${errors.password ? 'border-red-500' : 'border-gray-600'
+                                        }`}
                                     placeholder="Nhập mật khẩu"
-                                    required
                                 />
                                 <button
                                     type="button"
@@ -175,6 +254,9 @@ export default function Register() {
                                         <Eye className="h-5 w-5 text-gray-500 hover:text-gray-300" />
                                     )}
                                 </button>
+                                {errors.password && (
+                                    <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+                                )}
                             </div>
                         </div>
 
@@ -193,9 +275,9 @@ export default function Register() {
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
                                     onChange={handleInputChange}
-                                    className="block w-full pl-10 pr-12 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white"
+                                    className={`block w-full pl-10 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white ${errors.confirmPassword ? 'border-red-500' : 'border-gray-600'
+                                        }`}
                                     placeholder="Xác nhận mật khẩu"
-                                    required
                                 />
                                 <button
                                     type="button"
@@ -208,13 +290,15 @@ export default function Register() {
                                         <Eye className="h-5 w-5 text-gray-500 hover:text-gray-300" />
                                     )}
                                 </button>
+                                {errors.confirmPassword && (
+                                    <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
+                                )}
                             </div>
                         </div>
 
                         {/* Submit Button */}
                         <button
-                            type="button"
-
+                            type="submit"
                             disabled={isLoading}
                             className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl text-sm font-medium text-white bg-gradient-to-r from-orange-300 to-orange-400 hover:from-orange-400 hover:to-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
                         >
@@ -237,7 +321,7 @@ export default function Register() {
                                 </a>
                             </p>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 {/* Footer */}

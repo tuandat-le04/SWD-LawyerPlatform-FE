@@ -1,14 +1,11 @@
 import { Button } from 'bootstrap'
 import React, { useState } from 'react'
 import { useNavigate, NavLink } from 'react-router-dom'
+import AuthButton from '../AuthButton'
 
 export default function CustomerHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const navigate = useNavigate()
-
-  const handleLoginClick = () => {
-    navigate('/login')
-  }
 
   const handleLogoClick = () => {
     navigate('/')
@@ -105,9 +102,7 @@ export default function CustomerHeader() {
                 ></span>
               )}
             </NavLink>
-            <button onClick={handleLoginClick} className="bg-amber-500 text-gray-900 px-6 py-2 rounded-lg hover:bg-amber-600 transition-colors font-semibold">
-              Đăng nhập
-            </button>
+            <AuthButton />
           </nav>
 
           {/* Mobile menu button */}
@@ -143,9 +138,7 @@ export default function CustomerHeader() {
               <NavLink to="/contact" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-400 hover:text-amber-400'}>
                 LIÊN HỆ
               </NavLink>
-              <button className="bg-amber-500 text-gray-900 px-6 py-2 rounded-lg hover:bg-amber-600 w-fit transition-all duration-300">
-                Đăng nhập
-              </button>
+              <AuthButton />
             </div>
           </div>
         )}

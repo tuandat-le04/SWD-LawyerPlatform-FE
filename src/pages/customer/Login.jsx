@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import authService from '../../services/auth'; // Import authService
 
 export default function LoginPage() {
-    const [userType, setUserType] = useState('customer'); // 'customer' or 'lawyer'
+    const [userType, setUserType] = useState('customer');
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
-        password: '',
-        rememberMe: false
+        password: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(''); // Thêm state để hiển thị lỗi
     const navigate = useNavigate();
+
+    // ...existing code...
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -29,27 +32,68 @@ export default function LoginPage() {
         navigate('/register');
     }
 
-    const handleSubmit = async () => {
-        setIsLoading(true);
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSubmit();
+        }
+    };
 
-        // Giả lập API call
-        setTimeout(() => {
+    const handleSubmit = async () => {
+        // Validate form
+        if (!formData.email || !formData.password) {
+            setError('Vui lòng nhập đầy đủ email và mật khẩu');
+            return;
+        }
+
+        setIsLoading(true);
+        setError(''); // Clear previous errors
+
+        try {
+            console.log('Attempting login with:', formData);
+
+            // Call authService login
+            const result = await authService.login({
+                email: formData.email,
+                password: formData.password
+            });
+
+            console.log('Login result:', result);
+
+            if (result.success) {
+                console.log('Login thành công:', result.message);
+
+                // Trigger custom event để cập nhật AuthButton
+                window.dispatchEvent(new Event('loginSuccess'));
+
+                // Force update localStorage event (vì storage event không trigger trong cùng tab)
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('loginSuccess'));
+                }, 100);
+
+                // Multiple retry để đảm bảo event được trigger
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('loginSuccess'));
+                }, 300);
+
+                // Redirect về trang home
+                console.log('Redirecting to home page...');
+
+                // Delay redirect để đảm bảo event được xử lý
+                setTimeout(() => {
+                    navigate('/');
+                }, 500);
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+            setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+        } finally {
             setIsLoading(false);
-            console.log('Login attempt:', { ...formData, userType });
-        }, 2000);
+        }
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center px-4 sm:px-6 lg:px-8">
             <div className="relative max-w-md w-full">
-                {/* Back to Home */}
-                {/* <div className="mb-8">
-                    <button onClick={handleBackClick} className="flex items-center text-gray-400 hover:text-orange-300 transition-colors group">
-                        <ArrowLeft className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-                        <span>Quay về trang chủ</span>
-                    </button>
-                </div> */}
-
                 {/* Login Card */}
                 <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700 p-8">
                     {/* Header */}
@@ -68,6 +112,12 @@ export default function LoginPage() {
 
                     {/* Login Form */}
                     <div className="space-y-6">
+                        {/* Error Message */}
+                        {error && (
+                            <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl">
+                                <p className="text-sm">{error}</p>
+                            </div>
+                        )}
                         {/* Email Field */}
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
@@ -83,6 +133,7 @@ export default function LoginPage() {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
+                                    onKeyPress={handleKeyPress}
                                     className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white"
                                     placeholder="Nhập địa chỉ email của bạn"
                                     required
@@ -105,6 +156,7 @@ export default function LoginPage() {
                                     name="password"
                                     value={formData.password}
                                     onChange={handleInputChange}
+                                    onKeyPress={handleKeyPress}
                                     className="block w-full pl-10 pr-12 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent transition-all duration-200 bg-gray-800 text-white"
                                     placeholder="Nhập mật khẩu của bạn"
                                     required
@@ -121,26 +173,6 @@ export default function LoginPage() {
                                     )}
                                 </button>
                             </div>
-                        </div>
-
-                        {/* Remember Me & Forgot Password */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    id="rememberMe"
-                                    name="rememberMe"
-                                    checked={formData.rememberMe}
-                                    onChange={handleInputChange}
-                                    className="h-4 w-4 text-orange-300 focus:ring-orange-300 border-gray-600 rounded"
-                                />
-                                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-300">
-                                    Ghi nhớ đăng nhập
-                                </label>
-                            </div>
-                            <a href="#" className="text-sm text-orange-300 hover:text-orange-200 hover:underline">
-                                Quên mật khẩu?
-                            </a>
                         </div>
 
                         {/* Submit Button */}
