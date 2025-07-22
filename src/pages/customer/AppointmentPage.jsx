@@ -26,6 +26,8 @@ export default function Appointment() {
   const [consultationType, setConsultationType] = useState("");
   const [duration, setDuration] = useState("60");
   const [method, setMethod] = useState("online");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerNotes, setCustomerNotes] = useState("");
   const navigate = useNavigate();
 
   // Data states
@@ -51,20 +53,19 @@ export default function Appointment() {
         setError(null);
 
         const [
-          timeSlotsData,
           lawyersData,
           consultationTypesData,
           durationOptionsData,
           consultationMethodsData,
         ] = await Promise.all([
-          appointmentService.getTimeSlots(),
           lawyerService.getAllLawyers(),
           appointmentService.getConsultationTypes(),
           appointmentService.getDurationOptions(),
           appointmentService.getConsultationMethods(),
         ]);
 
-        setTimeSlots(timeSlotsData);
+        // Lấy time slots sau khi có date được chọn
+        setTimeSlots([]);
         setLawyers(lawyersData);
         setConsultationTypes(consultationTypesData);
         setDurationOptions(durationOptionsData);
@@ -79,6 +80,34 @@ export default function Appointment() {
 
     fetchData();
   }, []);
+
+  // Load user email from localStorage
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    if (userData.email) {
+      setCustomerEmail(userData.email);
+    }
+  }, []);
+
+  // Load time slots when date or lawyer changes
+  useEffect(() => {
+    const loadTimeSlots = async () => {
+      if (selectedDate && selectedLawyer) {
+        try {
+          const dateString = selectedDate.toISOString().split('T')[0];
+          const timeSlotsData = await appointmentService.getTimeSlots(dateString, selectedLawyer);
+          setTimeSlots(timeSlotsData);
+        } catch (error) {
+          console.error("Error loading time slots:", error);
+          setTimeSlots([]);
+        }
+      } else {
+        setTimeSlots([]);
+      }
+    };
+
+    loadTimeSlots();
+  }, [selectedDate, selectedLawyer]);
 
   // Calculate price when consultation type, duration, or method changes
   useEffect(() => {
@@ -121,6 +150,11 @@ export default function Appointment() {
       setIsSubmitting(true);
       setAppointmentResult(null);
 
+      // Validate email
+      if (!customerEmail || !customerEmail.includes('@')) {
+        throw new Error('Vui lòng nhập email hợp lệ để nhận thông báo');
+      }
+
       const appointmentData = {
         consultationType,
         selectedDate: selectedDate?.toISOString().split("T")[0],
@@ -128,6 +162,8 @@ export default function Appointment() {
         duration: Number.parseInt(duration),
         method,
         selectedLawyer,
+        customerEmail,
+        notes: customerNotes,
       };
 
       const result = await appointmentService.submitAppointment(
@@ -204,6 +240,8 @@ export default function Appointment() {
         return consultationType && duration && method;
       case 2:
         return selectedDate && selectedTime;
+      case 3:
+        return customerEmail && customerEmail.includes('@');
 
       default:
         return true;
@@ -288,11 +326,10 @@ export default function Appointment() {
               ].map((item, index) => (
                 <div key={item.step} className="flex items-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                      currentStep >= item.step
-                        ? "bg-amber-500 text-gray-900"
-                        : "bg-gray-700 text-gray-400"
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${currentStep >= item.step
+                      ? "bg-amber-500 text-gray-900"
+                      : "bg-gray-700 text-gray-400"
+                      }`}
                   >
                     {currentStep > item.step ? (
                       <Check className="w-5 h-5" />
@@ -301,17 +338,15 @@ export default function Appointment() {
                     )}
                   </div>
                   <span
-                    className={`ml-2 text-sm font-medium ${
-                      currentStep >= item.step ? "text-white" : "text-gray-400"
-                    }`}
+                    className={`ml-2 text-sm font-medium ${currentStep >= item.step ? "text-white" : "text-gray-400"
+                      }`}
                   >
                     {item.title}
                   </span>
                   {index < 2 && (
                     <div
-                      className={`w-16 h-0.5 mx-4 ${
-                        currentStep > item.step ? "bg-amber-500" : "bg-gray-700"
-                      }`}
+                      className={`w-16 h-0.5 mx-4 ${currentStep > item.step ? "bg-amber-500" : "bg-gray-700"
+                        }`}
                     />
                   )}
                 </div>
@@ -391,11 +426,10 @@ export default function Appointment() {
                           <div
                             key={type.value}
                             onClick={() => setConsultationType(type.value)}
-                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
-                              consultationType === type.value
-                                ? "border-amber-500 bg-amber-500/10"
-                                : "border-gray-600 hover:border-gray-500"
-                            }`}
+                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${consultationType === type.value
+                              ? "border-amber-500 bg-amber-500/10"
+                              : "border-gray-600 hover:border-gray-500"
+                              }`}
                           >
                             <h4 className="font-semibold text-white mb-2">
                               {type.label}
@@ -423,11 +457,10 @@ export default function Appointment() {
                           <div
                             key={option.value}
                             onClick={() => setDuration(option.value)}
-                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
-                              duration === option.value
-                                ? "border-amber-500 bg-amber-500/10"
-                                : "border-gray-600 hover:border-gray-500"
-                            }`}
+                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${duration === option.value
+                              ? "border-amber-500 bg-amber-500/10"
+                              : "border-gray-600 hover:border-gray-500"
+                              }`}
                           >
                             <h4 className="font-semibold text-white mb-2">
                               {option.label}
@@ -450,11 +483,10 @@ export default function Appointment() {
                           <div
                             key={methodOption.value}
                             onClick={() => setMethod(methodOption.value)}
-                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
-                              method === methodOption.value
-                                ? "border-amber-500 bg-amber-500/10"
-                                : "border-gray-600 hover:border-gray-500"
-                            }`}
+                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${method === methodOption.value
+                              ? "border-amber-500 bg-amber-500/10"
+                              : "border-gray-600 hover:border-gray-500"
+                              }`}
                           >
                             <div className="text-center">
                               {methodOption.icon === "video" && (
@@ -561,15 +593,14 @@ export default function Appointment() {
                         onClick={() =>
                           day.isAvailable && setSelectedDate(day.date)
                         }
-                        className={`text-center py-3 rounded-lg transition-all duration-300 ${
-                          day.isSelected
-                            ? "bg-amber-500 text-gray-900 font-bold"
-                            : day.isToday
+                        className={`text-center py-3 rounded-lg transition-all duration-300 ${day.isSelected
+                          ? "bg-amber-500 text-gray-900 font-bold"
+                          : day.isToday
                             ? "bg-amber-500/20 text-amber-400 border border-amber-500/50"
                             : day.isAvailable
-                            ? "text-gray-300 hover:bg-gray-700 hover:text-white"
-                            : "text-gray-600 cursor-not-allowed"
-                        } ${!day.isCurrentMonth ? "opacity-30" : ""}`}
+                              ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+                              : "text-gray-600 cursor-not-allowed"
+                          } ${!day.isCurrentMonth ? "opacity-30" : ""}`}
                       >
                         {day.day}
                       </button>
@@ -589,13 +620,12 @@ export default function Appointment() {
                             key={i}
                             disabled={!slot.available}
                             onClick={() => setSelectedTime(slot.time)}
-                            className={`text-center py-3 border rounded-lg transition-all duration-300 ${
-                              slot.time === selectedTime
-                                ? "bg-amber-500 text-gray-900 border-amber-500 font-bold"
-                                : slot.available
+                            className={`text-center py-3 border rounded-lg transition-all duration-300 ${slot.time === selectedTime
+                              ? "bg-amber-500 text-gray-900 border-amber-500 font-bold"
+                              : slot.available
                                 ? "border-gray-600 text-gray-300 hover:border-amber-500 hover:text-amber-400"
                                 : "text-gray-600 border-gray-700 cursor-not-allowed"
-                            }`}
+                              }`}
                           >
                             {slot.time}
                           </button>
@@ -614,11 +644,10 @@ export default function Appointment() {
                         <div
                           key={lawyer.id}
                           onClick={() => setSelectedLawyer(lawyer.id)}
-                          className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
-                            selectedLawyer === lawyer.id
-                              ? "border-amber-500 bg-amber-500/10"
-                              : "border-gray-600 hover:border-gray-500"
-                          }`}
+                          className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${selectedLawyer === lawyer.id
+                            ? "border-amber-500 bg-amber-500/10"
+                            : "border-gray-600 hover:border-gray-500"
+                            }`}
                         >
                           <div className="flex items-start space-x-3">
                             <img
@@ -703,6 +732,44 @@ export default function Appointment() {
                             </span>
                           </div>
                         )}
+                      </div>
+                    </div>
+
+                    {/* Customer Information */}
+                    <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                      <h3 className="text-lg font-semibold text-white mb-4">
+                        Thông tin liên hệ
+                      </h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Email nhận thông báo <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="email"
+                            value={customerEmail}
+                            onChange={(e) => setCustomerEmail(e.target.value)}
+                            placeholder="your.email@example.com"
+                            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-colors"
+                            required
+                          />
+                          <p className="text-xs text-gray-400 mt-1">
+                            Email xác nhận đặt lịch sẽ được gửi đến địa chỉ này
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Ghi chú thêm (tùy chọn)
+                          </label>
+                          <textarea
+                            value={customerNotes}
+                            onChange={(e) => setCustomerNotes(e.target.value)}
+                            placeholder="Mô tả chi tiết vấn đề cần tư vấn hoặc yêu cầu đặc biệt..."
+                            rows={4}
+                            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-colors resize-none"
+                          />
+                        </div>
                       </div>
                     </div>
 
