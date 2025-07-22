@@ -17,15 +17,16 @@ const api = axios.create({
 // Request interceptor - Thêm token vào header nếu có
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken"); // Đúng với key lưu khi đăng nhập
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${token}`,
+      };
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Response interceptor - Xử lý lỗi chung
@@ -34,12 +35,40 @@ api.interceptors.response.use(
     // Backend trả về format {code, status, message, data}
     return response.data;
   },
-  (error) => {
-    // Xử lý lỗi 401 - Token hết hạn
-    if (error.response?.status === 401) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      window.location.href = "/login";
+  async (error) => {
+    // Nếu lỗi 401 hoặc 403, thử refresh token
+    const originalRequest = error.config;
+    const status = error.response?.status;
+    if ((status === 401 || status === 403) && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (accessToken && refreshToken) {
+        try {
+          const refreshRes = await axios.post("/api/Auth/refresh-token", {
+            token: accessToken,
+            refreshToken: refreshToken,
+          });
+          // Nếu refresh thành công, lưu token mới và thử lại request
+          if (refreshRes.data?.token) {
+            localStorage.setItem("accessToken", refreshRes.data.token);
+            originalRequest.headers[
+              "Authorization"
+            ] = `Bearer ${refreshRes.data.token}`;
+            return api(originalRequest);
+          }
+        } catch (refreshError) {
+          // Nếu refresh thất bại, xóa token và chuyển về login
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          window.location.href = "/login";
+        }
+      } else {
+        // Không có token, chuyển về login
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+      }
     }
 
     // Xử lý các loại lỗi khác nhau
