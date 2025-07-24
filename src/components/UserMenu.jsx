@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../services/auth';
+
 
 const UserMenu = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -33,8 +33,11 @@ const UserMenu = () => {
     }, []);
 
     const handleLogout = () => {
-        authService.logout();
+        // Xóa thông tin user khỏi localStorage và chuyển về trang login
+        localStorage.removeItem('user');
+        localStorage.removeItem('userToken');
         setIsOpen(false);
+        navigate('/login');
     };
 
     const handleProfileClick = () => {
