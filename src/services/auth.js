@@ -85,47 +85,51 @@ const authService = {
         console.log("Raw accessToken:", response.data?.accessToken);
         console.log("Raw user:", response.data?.user);
 
-        // Lưu token vào localStorage
-        if (response.data?.token) {
-          console.log("Saving token as accessToken:", response.data.token);
-          localStorage.setItem("accessToken", response.data.token);
-
+        // Lưu accessToken vào localStorage
+        const tokenToSave = response.data?.token || response.data?.accessToken;
+        if (tokenToSave) {
+          console.log("Saving accessToken:", tokenToSave);
+          localStorage.setItem("accessToken", tokenToSave);
           // Verify token saved
           const savedToken = localStorage.getItem("accessToken");
           console.log("Token verification after save:", savedToken);
-        } else if (response.data?.accessToken) {
-          console.log("Saving accessToken:", response.data.accessToken);
-          localStorage.setItem("accessToken", response.data.accessToken);
 
-          // Verify token saved
-          const savedToken = localStorage.getItem("accessToken");
-          console.log("Token verification after save:", savedToken);
+          // Giải mã token để lấy User ID
+          const decodedToken = authService.decodeJwtToken(tokenToSave);
+          console.log("Decoded Token:", decodedToken);
+          const userId = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+          const userEmail = decodedToken.email;
+          const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+          let userProfile = {
+            email: userEmail,
+            id: userId, // Lưu userId vào user object
+            role: userRole,
+            name: userEmail.split("@")[0], // Fallback name
+          };
+
+          if (response.data?.user) {
+            // Nếu backend trả về user data, ưu tiên dùng nó và thêm ID nếu chưa có
+            userProfile = { ...userProfile, ...response.data.user, id: userId || response.data.user.id };
+          }
+          console.log("Saving user profile:", userProfile);
+          localStorage.setItem("user", JSON.stringify(userProfile));
+
         } else {
-          console.log("No token or accessToken in response.data");
+          console.log("No token or accessToken in response.data for saving");
         }
+        
         if (response.data?.refreshToken) {
           console.log("Saving refreshToken:", response.data.refreshToken);
           localStorage.setItem("refreshToken", response.data.refreshToken);
-        }
-        if (response.data?.user) {
-          console.log("Saving user:", response.data.user);
-          localStorage.setItem("user", JSON.stringify(response.data.user));
-        } else {
-          // Nếu backend không trả user data, tạo mock user từ email
-          const mockUser = {
-            email: credentials.email,
-            name: credentials.email.split("@")[0],
-          };
-          console.log("Creating mock user:", mockUser);
-          localStorage.setItem("user", JSON.stringify(mockUser));
         }
 
         // Không redirect ở đây, để component xử lý
         return {
           success: true,
           message: response.message || "Đăng nhập thành công",
-          user: response.data?.user,
-          accessToken: response.data?.token || response.data?.accessToken, // Backend trả về "token" field
+          user: JSON.parse(localStorage.getItem("user")), // Return the full user object from localStorage
+          accessToken: tokenToSave,
         };
       } else {
         console.log("Login condition NOT met - throwing error");
@@ -171,6 +175,21 @@ const authService = {
   getToken: () => {
     return localStorage.getItem("accessToken");
   },
+
+  // Helper function to decode JWT
+  decodeJwtToken: (token) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      console.error("Error decoding JWT token:", e);
+      return null;
+    }
+  }
 };
 
 export default authService;
