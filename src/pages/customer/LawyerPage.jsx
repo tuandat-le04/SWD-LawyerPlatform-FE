@@ -74,7 +74,6 @@ export default function LawyersPage() {
       lawyer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesSpecialty = !selectedSpecialty || lawyer.specialties.includes(selectedSpecialty)
-    // Đã xóa matchesLocation vì không còn location
     return matchesSearch && matchesSpecialty
   })
 
@@ -276,7 +275,7 @@ export default function LawyersPage() {
                   <div className="flex items-start space-x-4">
                     <div className="relative">
                       <img
-                        src={lawyer.avatar || "/placeholder.svg"}
+                        src={lawyer.avatar || "public/images/avatar.png"}
                         alt={lawyer.name}
                         className="relative w-20 h-20 rounded-full object-cover border-2 border-amber-500/30 group-hover:border-amber-500/70 transition-all duration-300 group-hover:scale-110"
                       />
@@ -297,7 +296,6 @@ export default function LawyersPage() {
                       <h3 className="font-bold text-lg text-white mb-1 group-hover:text-amber-400 transition-colors duration-300">
                         {lawyer.name}
                       </h3>
-                      {/* Đã xóa phần reviews và location */}
                     </div>
                   </div>
                 </div>

@@ -2,118 +2,125 @@ import api from "./api.js";
 
 // Appointment API services
 export const appointmentApi = {
-  // Lấy danh sách time slots khả dụng
+  // Trả về danh sách time slots cố định (luôn luôn có sẵn)
   getTimeSlots: async (date, lawyerId) => {
-    try {
-      const params = new URLSearchParams();
-      if (date) params.append("date", date);
-      if (lawyerId) params.append("lawyerId", lawyerId);
-
-      const response = await api.get(`/api/Appointment/time-slots?${params}`);
-      return response;
-    } catch (error) {
-      console.error("Error fetching time slots:", error);
-      // Fallback data nếu API lỗi
-      return [
-        { value: "09:00", label: "09:00 AM", available: true },
-        { value: "10:00", label: "10:00 AM", available: true },
-        { value: "11:00", label: "11:00 AM", available: false },
-        { value: "14:00", label: "02:00 PM", available: true },
-        { value: "15:00", label: "03:00 PM", available: true },
-        { value: "16:00", label: "04:00 PM", available: true },
-        { value: "17:00", label: "05:00 PM", available: false },
-      ];
-    }
+    // Không cần gọi API, trả về time slots cố định
+    return [
+      { time: "08:00", available: true },
+      { time: "08:30", available: true },
+      { time: "09:00", available: true },
+      { time: "09:30", available: true },
+      { time: "10:00", available: true },
+      { time: "10:30", available: true },
+      { time: "11:00", available: true },
+      { time: "11:30", available: true },
+      { time: "13:00", available: true },
+      { time: "13:30", available: true },
+      { time: "14:00", available: true },
+      { time: "14:30", available: true },
+      { time: "15:00", available: true },
+      { time: "15:30", available: true },
+      { time: "16:00", available: true },
+      { time: "16:30", available: true },
+      { time: "17:00", available: true },
+      { time: "17:30", available: true },
+      { time: "18:00", available: true },
+      { time: "18:30", available: true },
+      { time: "19:00", available: true },
+      { time: "19:30", available: true },
+      { time: "20:00", available: true },
+    ];
   },
 
-  // Lấy danh sách loại tư vấn
+  // Trả về danh sách loại tư vấn cố định
   getConsultationTypes: async () => {
-    try {
-      const response = await api.get("/api/Appointment/consultation-types");
-      return response;
-    } catch (error) {
-      console.error("Error fetching consultation types:", error);
-      // Fallback data nếu API lỗi
-      return [
-        { value: "legal-advice", label: "Tư vấn pháp lý", price: 500000 },
-        { value: "contract-review", label: "Soát xét hợp đồng", price: 800000 },
-        { value: "litigation", label: "Tố tụng", price: 1200000 },
-        { value: "business-law", label: "Luật doanh nghiệp", price: 1000000 },
-      ];
-    }
+    return [
+      {
+        value: "real-estate",
+        label: "Luật Bất Động Sản",
+        description:
+          "Tư vấn pháp luật về giao dịch, tranh chấp và quy hoạch bất động sản.",
+        basePrice: 500000,
+      },
+      {
+        value: "family",
+        label: "Luật Hôn Nhân & Gia Đình",
+        description:
+          "Tư vấn các vấn đề về kết hôn, ly hôn, quyền nuôi con, phân chia tài sản.",
+        basePrice: 600000,
+      },
+      {
+        value: "criminal",
+        label: "Luật Hình Sự",
+        description:
+          "Tư vấn các vấn đề về tố tụng hình sự, bào chữa, khiếu nại tố cáo.",
+        basePrice: 800000,
+      },
+      {
+        value: "business",
+        label: "Luật Doanh Nghiệp",
+        description:
+          "Tư vấn thành lập doanh nghiệp, tổ chức lại, vận hành và phát triển.",
+        basePrice: 1000000,
+      },
+      {
+        value: "labor",
+        label: "Luật Lao Động",
+        description:
+          "Tư vấn hợp đồng lao động, quyền lợi và nghĩa vụ của người lao động và doanh nghiệp.",
+        basePrice: 400000,
+      },
+      {
+        value: "finance",
+        label: "Luật Tài Chính & Ngân Hàng",
+        description:
+          "Tư vấn các vấn đề tài chính, ngân hàng, đầu tư và tranh chấp ngân hàng.",
+        basePrice: 700000,
+      },
+      {
+        value: "administrative",
+        label: "Luật Hành Chính",
+        description:
+          "Tư vấn khiếu nại, tố cáo, giấy phép và tranh chấp với cơ quan nhà nước.",
+        basePrice: 500000,
+      },
+    ];
   },
 
-  // Lấy danh sách thời lượng tư vấn
+  // Trả về danh sách thời lượng tư vấn cố định
   getDurationOptions: async () => {
-    try {
-      const response = await api.get("/api/Appointment/duration-options");
-      return response;
-    } catch (error) {
-      console.error("Error fetching duration options:", error);
-      // Fallback data nếu API lỗi
-      return [
-        { value: 30, label: "30 phút" },
-        { value: 60, label: "1 giờ" },
-        { value: 90, label: "1.5 giờ" },
-        { value: 120, label: "2 giờ" },
-      ];
-    }
+    return [
+      {
+        value: "30",
+        label: "30 phút",
+        description: "Tư vấn nhanh, giải đáp cơ bản.",
+      },
+      {
+        value: "60",
+        label: "60 phút",
+        description: "Tư vấn chuyên sâu, giải quyết vấn đề phức tạp.",
+      },
+    ];
   },
 
-  // Lấy danh sách phương thức tư vấn (online, offline, etc.)
+  // Trả về danh sách phương thức tư vấn cố định
   getConsultationMethods: async () => {
-    try {
-      const response = await api.get("/api/Appointment/consultation-methods");
-      return response;
-    } catch (error) {
-      console.error("Error fetching consultation methods:", error);
-      // Fallback data nếu API lỗi
-      return [
-        { value: "online", label: "Tư vấn trực tuyến", icon: "video" },
-        { value: "offline", label: "Tư vấn tại văn phòng", icon: "building" },
-        { value: "phone", label: "Tư vấn qua điện thoại", icon: "phone" },
-      ];
-    }
-  },
-
-  // Tính toán giá cho cuộc hẹn
-  calculatePrice: async (appointmentData) => {
-    try {
-      const response = await api.post(
-        "/api/Appointment/calculate-price",
-        appointmentData
-      );
-      // Đảm bảo trả về đúng trường price
-      if (response && typeof response.price !== "undefined") {
-        return response;
-      } else if (typeof response.total !== "undefined") {
-        // Nếu backend trả về total thay vì price
-        return { price: response.total, ...response };
-      } else {
-        // Nếu không có trường price, fallback
-        return { price: 0, breakdown: {} };
-      }
-    } catch (error) {
-      console.error("Error calculating price:", error);
-      // Fallback calculation nếu API lỗi
-      const basePrice = 500000; // Giá cơ bản 500k
-      const durationMultiplier = appointmentData.duration / 60; // Tính theo giờ
-      const methodMultiplier = appointmentData.method === "offline" ? 1.2 : 1; // Offline đắt hơn 20%
-
-      const calculatedPrice = Math.round(
-        basePrice * durationMultiplier * methodMultiplier
-      );
-
-      return {
-        price: calculatedPrice,
-        breakdown: {
-          basePrice,
-          duration: appointmentData.duration,
-          method: appointmentData.method,
-          total: calculatedPrice,
-        },
-      };
-    }
+    return [
+      {
+        value: "online",
+        label: "Tư vấn trực tuyến",
+        icon: "video",
+        description: "Gọi video qua Zoom/Google Meet.",
+        priceAdjustment: 0,
+      },
+      {
+        value: "offline",
+        label: "Tư vấn tại văn phòng",
+        icon: "building",
+        description: "Gặp trực tiếp tại văn phòng luật sư.",
+        priceAdjustment: 100000,
+      },
+    ];
   },
 
   // Gửi yêu cầu đặt lịch hẹn
@@ -153,8 +160,6 @@ export const appointmentApi = {
       throw error;
     }
   },
-
-  // Các phương thức bổ sung có thể hữu ích
 
   // Lấy chi tiết một cuộc hẹn
   getAppointmentById: async (appointmentId) => {
@@ -222,7 +227,6 @@ export const {
   getConsultationTypes,
   getDurationOptions,
   getConsultationMethods,
-  calculatePrice,
   submitAppointment,
   getUserAppointments,
   getAppointmentById,

@@ -14,8 +14,6 @@ export default function LoginPage() {
     const [error, setError] = useState(''); // Thêm state để hiển thị lỗi
     const navigate = useNavigate();
 
-    // ...existing code...
-
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
