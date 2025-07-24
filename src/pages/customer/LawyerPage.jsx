@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { lawyerService } from "../../services/lawyerService"
+import { useNavigate } from "react-router-dom"
 
 export default function LawyersPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -14,6 +15,7 @@ export default function LawyersPage() {
   const [faqs, setFaqs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
   // Static specialties list
   const specialties = [
@@ -21,8 +23,8 @@ export default function LawyersPage() {
     "Luật bất động sản",
     "Luật hình sự",
     "Luật lao động",
-    "Luật hôn nhân & gia đình",
-    "Luật tài chính & ngân hàng",
+    "Luật hôn nhân và gia đình",
+    "Luật tài chính và ngân hàng",
     "Luật hành chính"
   ]
 
@@ -169,12 +171,12 @@ export default function LawyersPage() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="group">
+            <button onClick={() => navigate('/appointment')} className="group">
               <div className="bg-amber-500 hover:bg-amber-600 text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform group-hover:scale-105">
                 Tư vấn ngay
               </div>
             </button>
-            <button className="border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105">
+            <button onClick={() => navigate('/services')} className="border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105">
               Xem thêm dịch vụ
             </button>
           </div>
@@ -370,32 +372,9 @@ export default function LawyersPage() {
                     </p>
                   </div>
 
-                  {/* Consultation Fee */}
-                  <div className="bg-gradient-to-r from-gray-700/50 to-gray-600/50 p-4 rounded-xl border border-gray-600 group-hover:border-amber-500/30 transition-all duration-300">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                        Phí tư vấn
-                      </span>
-                      <span className="font-bold text-amber-400 group-hover:text-amber-300 transition-colors duration-300">
-                        {lawyer.consultationFee}
-                      </span>
-                    </div>
-                  </div>
-
                   {/* Action Buttons */}
                   <div className="flex gap-2 pt-2">
-                    <button className="flex-1 px-4 py-2 border border-amber-500 text-amber-400 rounded-lg hover:bg-amber-500/10 transition-all duration-300 text-sm font-medium flex items-center justify-center transform hover:scale-105 group-hover:border-amber-400">
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                        />
-                      </svg>
-                      Nhắn tin
-                    </button>
-                    <button className="flex-1">
+                    <button onClick={() => navigate('/appointment')} className="flex-1">
                       <div className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-lg transition-all duration-300 text-sm font-medium flex items-center justify-center transform hover:scale-105">
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -513,28 +492,6 @@ export default function LawyersPage() {
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="relative py-16 bg-gradient-to-r from-gray-800 to-gray-900">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-yellow-500/10"></div>
-        <div className="relative container mx-auto px-4 text-center">
-          <h3 className="text-4xl font-bold text-white mb-6">Sẵn sàng nhận tư vấn pháp lý?</h3>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Đừng để vấn đề pháp lý trở thành gánh nặng. Hãy để chúng tôi hỗ trợ bạn ngay hôm nay.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="group">
-              <div className="bg-amber-500 hover:bg-amber-600 text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform group-hover:scale-105">
-                Liên hệ ngay
-              </div>
-            </button>
-            <button className="border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105">
-              Gọi hotline: 1900-xxxx
-            </button>
-          </div>
-        </div>
-      </section>
-
 
       {/* Scroll to top button */}
       <button

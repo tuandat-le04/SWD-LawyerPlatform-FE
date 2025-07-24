@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowLeft, User, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../../services/auth';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -72,38 +71,38 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitMessage('');
+        setErrors({});
 
-        if (!validateForm()) {
+        // Validate form
+        const newErrors = {};
+        if (!formData.name) newErrors.name = 'Vui lòng nhập tên';
+        if (!formData.email) newErrors.email = 'Vui lòng nhập email';
+        if (!formData.phone) newErrors.phone = 'Vui lòng nhập số điện thoại';
+        if (!formData.password) newErrors.password = 'Vui lòng nhập mật khẩu';
+        if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
-        try {
-            setIsLoading(true);
-            setSubmitMessage('');
-
-            await authService.register(formData);
-
-            setSubmitMessage('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.');
-
-            // Reset form
-            setFormData({
-                name: '',
-                email: '',
-                phone: '',
-                password: '',
-                confirmPassword: ''
-            });
-
-            // Redirect to login after 2 seconds
-            setTimeout(() => {
-                navigate('/login');
-            }, 2000);
-
-        } catch (error) {
-            setSubmitMessage(error.message || 'Đăng ký thất bại. Vui lòng thử lại.');
-        } finally {
+        setIsLoading(true);
+        // Dữ liệu mẫu: chỉ cần lưu user vào localStorage
+        setTimeout(() => {
+            const user = {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                id: Math.random().toString(36).substr(2, 9),
+                role: 'customer',
+            };
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('userToken', 'sample-token');
             setIsLoading(false);
-        }
+            setSubmitMessage('Đăng ký thành công!');
+            // Chuyển về trang chủ sau đăng ký
+            setTimeout(() => navigate('/'), 1200);
+        }, 1000);
     };
 
     const handleBackClick = () => {
@@ -142,8 +141,8 @@ export default function Register() {
                         {/* Success/Error Message */}
                         {submitMessage && (
                             <div className={`p-4 rounded-xl text-center ${submitMessage.includes('thành công')
-                                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                    : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                : 'bg-red-500/20 text-red-400 border border-red-500/30'
                                 }`}>
                                 {submitMessage}
                             </div>

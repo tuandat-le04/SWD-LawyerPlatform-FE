@@ -14,8 +14,7 @@ import {
   Mail,
   MapPin,
 } from "lucide-react";
-import { lawyerService } from "../../services/lawyerService";
-import { appointmentService } from "../../services/appointmentService";
+
 
 export default function Appointment() {
   // State management
@@ -24,7 +23,6 @@ export default function Appointment() {
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedLawyer, setSelectedLawyer] = useState("");
   const [consultationType, setConsultationType] = useState("");
-  const [duration, setDuration] = useState("60");
   const [method, setMethod] = useState("online");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
@@ -76,19 +74,6 @@ export default function Appointment() {
     },
   ]);
 
-  const [durationOptions] = useState([
-    {
-      value: "30",
-      label: "30 phút",
-      description: "Tư vấn nhanh, giải đáp cơ bản.",
-    },
-    {
-      value: "60",
-      label: "60 phút",
-      description: "Tư vấn chuyên sâu, giải quyết vấn đề phức tạp.",
-    },
-  ]);
-
   const [consultationMethods] = useState([
     {
       value: "online",
@@ -133,35 +118,20 @@ export default function Appointment() {
     { time: "20:00", available: true },
   ]);
 
-  // Chỉ fetch lawyers từ backend
-  const [lawyers, setLawyers] = useState([]);
+  // Dữ liệu mẫu cho lawyers
+  const [lawyers] = useState([
+    { id: "1", name: "Nguyễn Văn A", specialty: "Luật Hình Sự" },
+    { id: "2", name: "Trần Thị B", specialty: "Luật Hôn Nhân" },
+    { id: "3", name: "Phạm Văn C", specialty: "Luật Doanh Nghiệp" }
+  ]);
 
   // UI states
-  const [loading, setLoading] = useState(true);
+  const [loading] = useState(false);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [appointmentResult, setAppointmentResult] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calculatedPrice, setCalculatedPrice] = useState("0");
-
-  // Chỉ fetch lawyers từ backend
-  useEffect(() => {
-    const fetchLawyers = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const lawyersData = await lawyerService.getAllLawyers();
-        setLawyers(lawyersData);
-      } catch (error) {
-        console.error("Error fetching lawyers:", error);
-        setError("Có lỗi xảy ra khi tải dữ liệu luật sư. Vui lòng thử lại sau.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLawyers();
-  }, []);
 
   // Load user email from localStorage
   useEffect(() => {
@@ -171,21 +141,19 @@ export default function Appointment() {
     }
   }, []);
 
-  // Calculate price when consultation type, duration, or method changes
+  // Calculate price when consultation type or method changes
   useEffect(() => {
-    if (consultationType && duration && method) {
+    if (consultationType && method) {
       const typeInfo = consultationTypes.find(t => t.value === consultationType);
       const methodInfo = consultationMethods.find(m => m.value === method);
       const basePrice = typeInfo ? typeInfo.basePrice : 0;
-      const durationValue = Number(duration);
-      const durationMultiplier = durationValue / 60; // 30 phút = 0.5, 60 phút = 1
       const methodAdjustment = methodInfo ? methodInfo.priceAdjustment : 0;
-      const price = Math.round(basePrice * durationMultiplier + methodAdjustment);
+      const price = basePrice + methodAdjustment;
       setCalculatedPrice(price.toLocaleString());
     } else {
       setCalculatedPrice("0");
     }
-  }, [consultationType, duration, method, consultationTypes, consultationMethods]);
+  }, [consultationType, method, consultationTypes, consultationMethods]);
 
   const handleBackClick = () => {
     navigate("/");
@@ -204,42 +172,37 @@ export default function Appointment() {
   };
 
   const handleSubmitAppointment = async () => {
-    try {
-      setIsSubmitting(true);
-      setAppointmentResult(null);
+    setIsSubmitting(true);
+    setAppointmentResult(null);
 
-      // Validate email
-      if (!customerEmail || !customerEmail.includes("@")) {
-        throw new Error("Vui lòng nhập email hợp lệ để nhận thông báo");
-      }
-
-      const appointmentData = {
-        consultationType,
-        selectedDate: selectedDate?.toISOString().split("T")[0],
-        selectedTime,
-        duration: Number.parseInt(duration),
-        method,
-        selectedLawyer,
-        customerEmail,
-        notes: customerNotes,
-      };
-
-      const result = await appointmentService.submitAppointment(appointmentData);
-      setAppointmentResult({
-        success: true,
-        message: result.message || "Đặt lịch thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.",
-        appointmentId: result.appointmentId || Math.random().toString(36).substr(2, 9).toUpperCase(),
-        appointmentDetails: result.appointmentDetails,
-      });
-    } catch (error) {
+    // Validate email
+    if (!customerEmail || !customerEmail.includes("@")) {
       setAppointmentResult({
         success: false,
-        message:
-          error.message || "Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại sau.",
+        message: "Vui lòng nhập email hợp lệ để nhận thông báo",
       });
-    } finally {
       setIsSubmitting(false);
+      return;
     }
+
+    // Simulate appointment booking with sample data
+    setTimeout(() => {
+      setAppointmentResult({
+        success: true,
+        message: "Đặt lịch thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.",
+        appointmentId: Math.random().toString(36).substr(2, 9).toUpperCase(),
+        appointmentDetails: {
+          consultationType,
+          selectedDate: selectedDate?.toISOString().split("T")[0],
+          selectedTime,
+          method,
+          selectedLawyer,
+          customerEmail,
+          notes: customerNotes,
+        },
+      });
+      setIsSubmitting(false);
+    }, 1200);
   };
 
   const generateCalendarDays = () => {
@@ -292,7 +255,7 @@ export default function Appointment() {
   const canProceedToNextStep = () => {
     switch (currentStep) {
       case 1:
-        return consultationType && duration && method;
+        return consultationType && method;
       case 2:
         return selectedDate && selectedTime;
       case 3:
@@ -501,32 +464,6 @@ export default function Appointment() {
                       </div>
                     </div>
 
-                    {/* Duration */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Thời lượng tư vấn
-                      </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {durationOptions.map((option) => (
-                          <div
-                            key={option.value}
-                            onClick={() => setDuration(option.value)}
-                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${duration === option.value
-                              ? "border-amber-500 bg-amber-500/10"
-                              : "border-gray-600 hover:border-gray-500"
-                              }`}
-                          >
-                            <h4 className="font-semibold text-white mb-2">
-                              {option.label}
-                            </h4>
-                            <p className="text-gray-400 text-sm">
-                              {option.description}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
                     {/* Method */}
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-3">
@@ -569,7 +506,7 @@ export default function Appointment() {
                     </div>
 
                     {/* Price Preview */}
-                    {consultationType && duration && method && (
+                    {consultationType && method && (
                       <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
                         <div className="flex justify-between items-center">
                           <span className="text-white font-medium">
@@ -752,12 +689,6 @@ export default function Appointment() {
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-300">Thời lượng:</span>
-                          <span className="text-white font-medium">
-                            {duration} phút
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
                           <span className="text-gray-300">Phương thức:</span>
                           <span className="text-white font-medium">
                             {getMethodInfo()?.label}
@@ -923,12 +854,6 @@ export default function Appointment() {
                         <span className="text-gray-400">Loại tư vấn:</span>
                         <span className="font-medium text-white">
                           {getConsultationTypeInfo()?.label || "Chưa chọn"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between mb-3">
-                        <span className="text-gray-400">Thời lượng:</span>
-                        <span className="font-medium text-white">
-                          {duration} phút
                         </span>
                       </div>
                       <div className="flex justify-between mb-3">

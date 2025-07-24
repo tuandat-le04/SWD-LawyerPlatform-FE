@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../../services/auth'; // Import authService
+
 
 export default function LoginPage() {
-    const [userType, setUserType] = useState('customer');
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -36,7 +35,7 @@ export default function LoginPage() {
         }
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         // Validate form
         if (!formData.email || !formData.password) {
             setError('Vui lòng nhập đầy đủ email và mật khẩu');
@@ -44,49 +43,23 @@ export default function LoginPage() {
         }
 
         setIsLoading(true);
-        setError(''); // Clear previous errors
+        setError('');
 
-        try {
-            console.log('Attempting login with:', formData);
-
-            // Call authService login
-            const result = await authService.login({
+        // Dữ liệu mẫu: chỉ cần email và password bất kỳ
+        setTimeout(() => {
+            // Lưu thông tin user vào localStorage
+            const user = {
                 email: formData.email,
-                password: formData.password
-            });
-
-            console.log('Login result:', result);
-
-            if (result.success) {
-                console.log('Login thành công:', result.message);
-
-                // Trigger custom event để cập nhật AuthButton
-                window.dispatchEvent(new Event('loginSuccess'));
-
-                // Force update localStorage event (vì storage event không trigger trong cùng tab)
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('loginSuccess'));
-                }, 100);
-
-                // Multiple retry để đảm bảo event được trigger
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('loginSuccess'));
-                }, 300);
-
-                // Redirect về trang home
-                console.log('Redirecting to home page...');
-
-                // Delay redirect để đảm bảo event được xử lý
-                setTimeout(() => {
-                    navigate('/');
-                }, 500);
-            }
-        } catch (error) {
-            console.error('Login failed:', error);
-            setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
-        } finally {
+                name: formData.email.split('@')[0],
+                id: Math.random().toString(36).substr(2, 9),
+                role: 'customer',
+            };
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('userToken', 'sample-token');
             setIsLoading(false);
-        }
+            // Chuyển về trang chủ
+            navigate('/');
+        }, 1000);
     };
 
     return (

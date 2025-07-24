@@ -65,7 +65,7 @@ const servicesData = [
     },
     {
         id: 3,
-        title: "Luật Hôn Nhân & Gia Đình",
+        title: "Luật Hôn Nhân và Gia Đình",
         icon: Heart,
         description: "Hỗ trợ pháp lý tận tâm cho các vấn đề hôn nhân, gia đình và bảo vệ trẻ em",
         features: ["Thủ tục ly hôn", "Phân chia tài sản", "Quyền nuôi con", "Bạo lực gia đình", "Thừa kế gia đình"],
@@ -116,7 +116,7 @@ const servicesData = [
     },
     {
         id: 6,
-        title: "Luật Tài Chính & Ngân Hàng",
+        title: "Luật Tài Chính và Ngân Hàng",
         icon: CreditCard,
         description: "Xử lý các vấn đề tài chính phức tạp, nợ xấu và tranh chấp ngân hàng",
         features: ["Xử lý nợ xấu", "Tranh chấp tín dụng", "Bảo hiểm", "Chứng khoán", "Tư vấn đầu tư"],
@@ -471,6 +471,88 @@ export default function ServicesPage() {
                     )}
                 </div>
             </section>
+
+            {/* Premium Packages Section */}
+            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h3 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                            GÓI DỊCH VỤ PREMIUM
+                        </h3>
+                        <p className="text-gray-400 text-lg">Chọn gói phù hợp để nhận nhiều ưu đãi và dịch vụ pháp lý chuyên nghiệp hơn!</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[
+                            {
+                                packagename: "Gói Cơ Bản",
+                                bookingcount: 2,
+                                lawformcount: 1,
+                                price: 499000,
+                                description: "Gói dịch vụ cơ bản bao gồm 2 buổi tư vấn trực tuyến và 1 biểu mẫu pháp lý. Phù hợp cho các nhu cầu đơn giản."
+                            },
+                            {
+                                packagename: "Gói Tiêu Chuẩn",
+                                bookingcount: 5,
+                                lawformcount: 3,
+                                price: 999000,
+                                description: "Gói dịch vụ tiêu chuẩn bao gồm 5 buổi tư vấn trực tuyến và 3 biểu mẫu pháp lý. Phù hợp cho các cá nhân có nhu cầu pháp lý đa dạng."
+                            },
+                            {
+                                packagename: "Gói Doanh Nghiệp",
+                                bookingcount: 10,
+                                lawformcount: 5,
+                                price: 1999000,
+                                description: "Gói dịch vụ doanh nghiệp bao gồm 10 buổi tư vấn trực tuyến và 5 biểu mẫu pháp lý. Phù hợp cho các doanh nghiệp vừa và nhỏ."
+                            },
+                            {
+                                packagename: "Gói VIP",
+                                bookingcount: 15,
+                                lawformcount: 10,
+                                price: 3999000,
+                                description: "Gói dịch vụ VIP bao gồm 15 buổi tư vấn trực tuyến và 10 biểu mẫu pháp lý. Được ưu tiên đặt lịch với luật sư cấp cao."
+                            },
+                            {
+                                packagename: "Gói Tư Vấn Riêng",
+                                bookingcount: 0,
+                                lawformcount: 0,
+                                price: 599000,
+                                description: "Gói chuyên về tư vấn với 3 buổi tư vấn trực tuyến. Phù hợp cho người cần tư vấn pháp lý chuyên sâu."
+                            },
+                            {
+                                packagename: "Gói Biểu Mẫu",
+                                bookingcount: 0,
+                                lawformcount: 5,
+                                price: 499000,
+                                description: "Gói chuyên về biểu mẫu với 5 biểu mẫu pháp lý. Phù hợp cho người cần nhiều tài liệu pháp lý."
+                            }
+                        ].map((pkg, idx) => (
+                            <div key={idx} className="p-8 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-amber-500/30 shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform hover:-translate-y-2">
+                                <h4 className="text-2xl font-bold text-amber-400 mb-3">{pkg.packagename}</h4>
+                                <p className="text-gray-300 mb-4 text-base">{pkg.description}</p>
+                                <div className="flex justify-between items-center mb-4">
+                                    <span className="text-sm text-gray-400">Số buổi tư vấn: <span className="font-semibold text-white">{pkg.bookingcount}</span></span>
+                                    <span className="text-sm text-gray-400">Biểu mẫu pháp lý: <span className="font-semibold text-white">{pkg.lawformcount}</span></span>
+                                </div>
+                                <div className="text-3xl font-bold text-amber-500 mb-4">{pkg.price.toLocaleString()}đ</div>
+                                <button
+                                    onClick={() => {
+                                        const user = localStorage.getItem('user');
+                                        if (!user) {
+                                            navigate('/login');
+                                        } else {
+                                            alert('Cảm ơn bạn đã mua gói dịch vụ! Chúng tôi sẽ liên hệ với bạn sớm nhất.');
+                                        }
+                                    }}
+                                    className="w-full bg-amber-500 text-gray-900 px-6 py-3 rounded-xl font-semibold hover:bg-amber-600 transition-all duration-300"
+                                >
+                                    Mua ngay
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+            s
 
             {/* Process Section */}
             <section className="py-16 bg-gray-800/30">
