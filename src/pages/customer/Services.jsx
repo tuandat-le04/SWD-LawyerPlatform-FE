@@ -447,9 +447,6 @@ export default function ServicesPage() {
 
                                     {/* Action Buttons */}
                                     <div className="flex gap-3">
-                                        <button className="flex-1 px-4 py-3 border border-amber-500 text-amber-400 rounded-xl hover:bg-amber-500/10 transition-all duration-300 font-medium">
-                                            Tư vấn miễn phí
-                                        </button>
                                         <button
                                             onClick={() => navigate("/appointment")}
                                             className="flex-1 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-xl transition-all duration-300 font-medium flex items-center justify-center"

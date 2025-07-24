@@ -53,7 +53,7 @@ const contactMethodsData = [
     available: "Phản hồi trong 2h",
   },
   {
-    id: 4,
+    id: 2,
     icon: "video",
     title: "Video call",
     description: "Tư vấn trực tiếp qua video",
