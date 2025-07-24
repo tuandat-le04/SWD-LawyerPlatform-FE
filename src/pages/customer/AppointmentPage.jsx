@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import apiService from "../../services/api";
+import { paymentService } from "../../services/paymentService";
 import {
   ArrowLeft,
   Clock,
-  Video,
   ChevronLeft,
   ChevronRight,
   Check,
@@ -15,145 +17,133 @@ import {
   MapPin,
 } from "lucide-react";
 
+// Constants - Dữ liệu cố định
+const TIME_SLOTS = [
+  { time: "08:00", available: true },
+  { time: "08:30", available: true },
+  { time: "09:00", available: true },
+  { time: "09:30", available: true },
+  { time: "10:00", available: true },
+  { time: "10:30", available: true },
+  { time: "11:00", available: true },
+  { time: "11:30", available: true },
+  { time: "13:00", available: true },
+  { time: "13:30", available: true },
+  { time: "14:00", available: true },
+  { time: "14:30", available: true },
+  { time: "15:00", available: true },
+  { time: "15:30", available: true },
+  { time: "16:00", available: true },
+  { time: "16:30", available: true },
+  { time: "17:00", available: true },
+  { time: "17:30", available: true },
+  { time: "18:00", available: true },
+  { time: "18:30", available: true },
+  { time: "19:00", available: true },
+  { time: "19:30", available: true },
+  { time: "20:00", available: true },
+];
+
+const STEPS = [
+  { step: 1, title: "Chọn dịch vụ" },
+  { step: 2, title: "Chọn thời gian" },
+  { step: 3, title: "Xác nhận" },
+];
 
 export default function Appointment() {
+  const { user } = useAuth(); // Get user info for customerId
+  
   // State management
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedLawyer, setSelectedLawyer] = useState("");
   const [consultationType, setConsultationType] = useState("");
-  const [method, setMethod] = useState("online");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [customerNotes, setCustomerNotes] = useState("");
-  const navigate = useNavigate();
-
-  // Data states - Dữ liệu cố định
-  const [consultationTypes] = useState([
-    {
-      value: "real-estate",
-      label: "Luật Bất Động Sản",
-      description: "Tư vấn pháp luật về giao dịch, tranh chấp và quy hoạch bất động sản.",
-      basePrice: 500000,
-    },
-    {
-      value: "family",
-      label: "Luật Hôn Nhân & Gia Đình",
-      description: "Tư vấn các vấn đề về kết hôn, ly hôn, quyền nuôi con, phân chia tài sản.",
-      basePrice: 600000,
-    },
-    {
-      value: "criminal",
-      label: "Luật Hình Sự",
-      description: "Tư vấn các vấn đề về tố tụng hình sự, bào chữa, khiếu nại tố cáo.",
-      basePrice: 800000,
-    },
-    {
-      value: "business",
-      label: "Luật Doanh Nghiệp",
-      description: "Tư vấn thành lập doanh nghiệp, tổ chức lại, vận hành và phát triển.",
-      basePrice: 1000000,
-    },
-    {
-      value: "labor",
-      label: "Luật Lao Động",
-      description: "Tư vấn hợp đồng lao động, quyền lợi và nghĩa vụ của người lao động và doanh nghiệp.",
-      basePrice: 400000,
-    },
-    {
-      value: "finance",
-      label: "Luật Tài Chính & Ngân Hàng",
-      description: "Tư vấn các vấn đề tài chính, ngân hàng, đầu tư và tranh chấp ngân hàng.",
-      basePrice: 700000,
-    },
-    {
-      value: "administrative",
-      label: "Luật Hành Chính",
-      description: "Tư vấn khiếu nại, tố cáo, giấy phép và tranh chấp với cơ quan nhà nước.",
-      basePrice: 500000,
-    },
-  ]);
-
-  const [consultationMethods] = useState([
-    {
-      value: "online",
-      label: "Tư vấn trực tuyến",
-      icon: "video",
-      description: "Gọi video qua Zoom/Google Meet.",
-      priceAdjustment: 0,
-    },
-    {
-      value: "offline",
-      label: "Tư vấn tại văn phòng",
-      icon: "building",
-      description: "Gặp trực tiếp tại văn phòng luật sư.",
-      priceAdjustment: 100000,
-    },
-  ]);
-
-  // Time slots cố định - luôn luôn có sẵn
-  const [timeSlots] = useState([
-    { time: "08:00", available: true },
-    { time: "08:30", available: true },
-    { time: "09:00", available: true },
-    { time: "09:30", available: true },
-    { time: "10:00", available: true },
-    { time: "10:30", available: true },
-    { time: "11:00", available: true },
-    { time: "11:30", available: true },
-    { time: "13:00", available: true },
-    { time: "13:30", available: true },
-    { time: "14:00", available: true },
-    { time: "14:30", available: true },
-    { time: "15:00", available: true },
-    { time: "15:30", available: true },
-    { time: "16:00", available: true },
-    { time: "16:30", available: true },
-    { time: "17:00", available: true },
-    { time: "17:30", available: true },
-    { time: "18:00", available: true },
-    { time: "18:30", available: true },
-    { time: "19:00", available: true },
-    { time: "19:30", available: true },
-    { time: "20:00", available: true },
-  ]);
-
-  // Dữ liệu mẫu cho lawyers
-  const [lawyers] = useState([
-    { id: "1", name: "Nguyễn Văn A", specialty: "Luật Hình Sự" },
-    { id: "2", name: "Trần Thị B", specialty: "Luật Hôn Nhân" },
-    { id: "3", name: "Phạm Văn C", specialty: "Luật Doanh Nghiệp" }
-  ]);
-
-  // UI states
-  const [loading] = useState(false);
-  const [error, setError] = useState(null);
+  const [requestMessage, setRequestMessage] = useState(""); // Thêm state cho request message
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [appointmentResult, setAppointmentResult] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calculatedPrice, setCalculatedPrice] = useState("0");
+  const [lawyers, setLawyers] = useState([]);
+  const [lawtypes, setLawtypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  // Load user email from localStorage
+  // Helper functions để map giá và mô tả (hardcode ở frontend)
+  const getLawtypePrice = (lawtypeName) => {
+    const priceMap = {
+      "Luật Bất Động Sản": 500000,
+      "Luật Hôn Nhân & Gia Đình": 600000,
+      "Luật Hình Sự": 800000,
+      "Luật Doanh Nghiệp": 1000000,
+      "Luật Lao Động": 400000,
+      "Luật Tài Chính & Ngân Hàng": 700000,
+      "Luật Hành Chính": 500000
+    };
+    return priceMap[lawtypeName] || 500000;
+  };
+
+  const getLawtypeDescription = (lawtypeName) => {
+    const descriptionMap = {
+      "Luật Bất Động Sản": "Tư vấn pháp luật về giao dịch, tranh chấp và quy hoạch bất động sản.",
+      "Luật Hôn Nhân & Gia Đình": "Tư vấn các vấn đề về kết hôn, ly hôn, quyền nuôi con, phân chia tài sản.",
+      "Luật Hình Sự": "Tư vấn các vấn đề về tố tụng hình sự, bào chữa, khiếu nại tố cáo.",
+      "Luật Doanh Nghiệp": "Tư vấn thành lập doanh nghiệp, tổ chức lại, vận hành và phát triển.",
+      "Luật Lao Động": "Tư vấn hợp đồng lao động, quyền lợi và nghĩa vụ của người lao động và doanh nghiệp.",
+      "Luật Tài Chính & Ngân Hàng": "Tư vấn các vấn đề tài chính, ngân hàng, đầu tư và tranh chấp ngân hàng.",
+      "Luật Hành Chính": "Tư vấn khiếu nại, tố cáo, giấy phép và tranh chấp với cơ quan nhà nước."
+    };
+    return descriptionMap[lawtypeName] || "Tư vấn pháp luật chuyên nghiệp.";
+  };
+
+  // Fetch dữ liệu từ API khi component mount
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user") || "{}");
-    if (userData.email) {
-      setCustomerEmail(userData.email);
-    }
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [lawyersResponse, lawtypesResponse] = await Promise.all([
+          apiService.getLawyers(),
+          apiService.getLawtypes()
+        ]);
+
+        // Map dữ liệu từ backend sang format frontend
+        if (lawyersResponse.status && lawyersResponse.data) {
+          setLawyers(lawyersResponse.data);
+        }
+
+        if (lawtypesResponse.status && lawtypesResponse.data) {
+          // Map lawtypes để có basePrice (hardcode ở frontend)
+          const mappedLawtypes = lawtypesResponse.data.map(lawtype => ({
+            lawtypeId: lawtype.lawtypeId,
+            lawtypeName: lawtype.lawtypeName,
+            // Hardcode giá ở frontend theo yêu cầu
+            basePrice: getLawtypePrice(lawtype.lawtypeName),
+            description: getLawtypeDescription(lawtype.lawtypeName)
+          }));
+          setLawtypes(mappedLawtypes);
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  // Calculate price when consultation type or method changes
+  // Calculate price when consultation type changes
   useEffect(() => {
-    if (consultationType && method) {
-      const typeInfo = consultationTypes.find(t => t.value === consultationType);
-      const methodInfo = consultationMethods.find(m => m.value === method);
+    if (consultationType) {
+      const typeInfo = lawtypes.find(t => t.lawtypeId.toString() === consultationType);
       const basePrice = typeInfo ? typeInfo.basePrice : 0;
-      const methodAdjustment = methodInfo ? methodInfo.priceAdjustment : 0;
-      const price = basePrice + methodAdjustment;
-      setCalculatedPrice(price.toLocaleString());
+      setCalculatedPrice(basePrice.toLocaleString());
     } else {
       setCalculatedPrice("0");
     }
-  }, [consultationType, method, consultationTypes, consultationMethods]);
+  }, [consultationType, lawtypes]);
 
   const handleBackClick = () => {
     navigate("/");
@@ -175,34 +165,69 @@ export default function Appointment() {
     setIsSubmitting(true);
     setAppointmentResult(null);
 
-    // Validate email
-    if (!customerEmail || !customerEmail.includes("@")) {
+    try {
+      // Validate dữ liệu trước khi gửi
+      if (!consultationType || !selectedLawyer || !selectedDate || !selectedTime) {
+        throw new Error('Vui lòng điền đầy đủ thông tin: loại tư vấn, luật sư, ngày và giờ');
+      }
+
+      // Chuẩn bị dữ liệu theo format backend expect
+      const appointmentData = {
+        lawtypeId: parseInt(consultationType),
+        lawyerId: parseInt(selectedLawyer),
+        customerId: parseInt(user?.userId) || null, // Add customerId from auth
+        scheduleDate: selectedDate.toISOString().split('T')[0], // Format: YYYY-MM-DD
+        scheduleTime: selectedTime + ':00', // Format: HH:mm:ss (TimeOnly format)
+        totalAmount: parseFloat(calculatedPrice.replace(/,/g, '')) || 0, // Remove commas and convert to number
+        request: requestMessage || 'Đặt lịch tư vấn pháp luật' // Required field - use user input or default
+      };
+
+      console.log('Sending appointment data:', appointmentData);
+
+      // Validate parsed data
+      if (isNaN(appointmentData.lawtypeId) || isNaN(appointmentData.lawyerId)) {
+        throw new Error('ID luật sư hoặc loại tư vấn không hợp lệ');
+      }
+
+      // 1. Tạo appointment
+      const appointmentResponse = await apiService.createAppointment(appointmentData);
+
+      if (appointmentResponse.status) {
+        const appointmentId = appointmentResponse.data.appointmentId || appointmentResponse.data.id;
+        const amount = appointmentData.totalAmount;
+
+        console.log('Appointment created successfully:', appointmentId);
+
+        // 2. Tạo payment URL
+        const paymentResponse = await paymentService.createPaymentUrl(appointmentId, amount);
+        
+        if (paymentResponse.status) {
+          // 3. Lưu thông tin appointment để xử lý sau khi thanh toán
+          localStorage.setItem('pendingAppointment', JSON.stringify({
+            appointmentId: appointmentId,
+            appointmentData: appointmentResponse.data,
+            amount: amount
+          }));
+          
+          console.log('Redirecting to VNPay:', paymentResponse.data.paymentUrl);
+          
+          // 4. Redirect đến VNPay
+          window.location.href = paymentResponse.data.paymentUrl;
+        } else {
+          throw new Error(paymentResponse.message || 'Không thể tạo URL thanh toán');
+        }
+      } else {
+        throw new Error(appointmentResponse.message || 'Đặt lịch thất bại');
+      }
+    } catch (error) {
+      console.error('Appointment creation error:', error);
       setAppointmentResult({
         success: false,
-        message: "Vui lòng nhập email hợp lệ để nhận thông báo",
+        message: error.message || 'Có lỗi xảy ra khi đặt lịch'
       });
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    // Simulate appointment booking with sample data
-    setTimeout(() => {
-      setAppointmentResult({
-        success: true,
-        message: "Đặt lịch thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.",
-        appointmentId: Math.random().toString(36).substr(2, 9).toUpperCase(),
-        appointmentDetails: {
-          consultationType,
-          selectedDate: selectedDate?.toISOString().split("T")[0],
-          selectedTime,
-          method,
-          selectedLawyer,
-          customerEmail,
-          notes: customerNotes,
-        },
-      });
-      setIsSubmitting(false);
-    }, 1200);
   };
 
   const generateCalendarDays = () => {
@@ -241,25 +266,21 @@ export default function Appointment() {
   };
 
   const getSelectedLawyerInfo = () => {
-    return lawyers.find((lawyer) => lawyer.id === selectedLawyer);
+    return lawyers.find((lawyer) => lawyer.lawyerId.toString() === selectedLawyer);
   };
 
   const getConsultationTypeInfo = () => {
-    return consultationTypes.find((type) => type.value === consultationType);
-  };
-
-  const getMethodInfo = () => {
-    return consultationMethods.find((m) => m.value === method);
+    return lawtypes.find((type) => type.lawtypeId.toString() === consultationType);
   };
 
   const canProceedToNextStep = () => {
     switch (currentStep) {
       case 1:
-        return consultationType && method;
+        return consultationType;
       case 2:
         return selectedDate && selectedTime;
       case 3:
-        return customerEmail && customerEmail.includes("@");
+        return true;
       default:
         return true;
     }
@@ -270,8 +291,8 @@ export default function Appointment() {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-amber-500 mx-auto"></div>
-          <p className="text-white mt-4">Đang tải dữ liệu...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-amber-500 border-t-transparent mx-auto mb-4"></div>
+          <p className="text-white">Đang tải dữ liệu...</p>
         </div>
       </div>
     );
@@ -282,25 +303,10 @@ export default function Appointment() {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-500 mb-4">
-            <svg
-              className="w-16 h-16 mx-auto"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-          </div>
-          <p className="text-white text-lg">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-6 py-2 bg-amber-500 text-gray-900 rounded-lg hover:bg-amber-600 transition-colors"
+          <p className="text-red-400 mb-4">Có lỗi xảy ra: {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-amber-500 text-gray-900 rounded-lg"
           >
             Thử lại
           </button>
@@ -336,17 +342,14 @@ export default function Appointment() {
           {/* Progress Steps */}
           <div className="mb-12">
             <div className="flex items-center justify-center">
-              {[
-                { step: 1, title: "Chọn dịch vụ" },
-                { step: 2, title: "Chọn thời gian" },
-                { step: 3, title: "Xác nhận" },
-              ].map((item, index) => (
+              {STEPS.map((item, index) => (
                 <div key={item.step} className="flex items-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${currentStep >= item.step
-                      ? "bg-amber-500 text-gray-900"
-                      : "bg-gray-700 text-gray-400"
-                      }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
+                      currentStep >= item.step
+                        ? "bg-amber-500 text-gray-900"
+                        : "bg-gray-700 text-gray-400"
+                    }`}
                   >
                     {currentStep > item.step ? (
                       <Check className="w-5 h-5" />
@@ -355,15 +358,17 @@ export default function Appointment() {
                     )}
                   </div>
                   <span
-                    className={`ml-2 text-sm font-medium ${currentStep >= item.step ? "text-white" : "text-gray-400"
-                      }`}
+                    className={`ml-2 text-sm font-medium ${
+                      currentStep >= item.step ? "text-white" : "text-gray-400"
+                    }`}
                   >
                     {item.title}
                   </span>
                   {index < 2 && (
                     <div
-                      className={`w-16 h-0.5 mx-4 ${currentStep > item.step ? "bg-amber-500" : "bg-gray-700"
-                        }`}
+                      className={`w-16 h-0.5 mx-4 ${
+                        currentStep > item.step ? "bg-amber-500" : "bg-gray-700"
+                      }`}
                     />
                   )}
                 </div>
@@ -439,17 +444,18 @@ export default function Appointment() {
                         Lĩnh vực tư vấn
                       </label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {consultationTypes.map((type) => (
+                        {lawtypes.map((type) => (
                           <div
-                            key={type.value}
-                            onClick={() => setConsultationType(type.value)}
-                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${consultationType === type.value
-                              ? "border-amber-500 bg-amber-500/10"
-                              : "border-gray-600 hover:border-gray-500"
-                              }`}
+                            key={type.lawtypeId}
+                            onClick={() => setConsultationType(type.lawtypeId.toString())}
+                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
+                              consultationType === type.lawtypeId.toString()
+                                ? "border-amber-500 bg-amber-500/10"
+                                : "border-gray-600 hover:border-gray-500"
+                            }`}
                           >
                             <h4 className="font-semibold text-white mb-2">
-                              {type.label}
+                              {type.lawtypeName}
                             </h4>
                             <p className="text-gray-400 text-sm mb-2">
                               {type.description}
@@ -464,49 +470,8 @@ export default function Appointment() {
                       </div>
                     </div>
 
-                    {/* Method */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-3">
-                        Phương thức tư vấn
-                      </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {consultationMethods.map((methodOption) => (
-                          <div
-                            key={methodOption.value}
-                            onClick={() => setMethod(methodOption.value)}
-                            className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${method === methodOption.value
-                              ? "border-amber-500 bg-amber-500/10"
-                              : "border-gray-600 hover:border-gray-500"
-                              }`}
-                          >
-                            <div className="text-center">
-                              {methodOption.icon === "video" && (
-                                <Video className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                              )}
-                              {methodOption.icon === "building" && (
-                                <MapPin className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                              )}
-                              <h4 className="font-semibold text-white mb-2">
-                                {methodOption.label}
-                              </h4>
-                              <p className="text-gray-400 text-sm">
-                                {methodOption.description}
-                              </p>
-                              {methodOption.priceAdjustment > 0 && (
-                                <p className="text-amber-400 text-xs mt-2">
-                                  +
-                                  {methodOption.priceAdjustment.toLocaleString()}{" "}
-                                  VNĐ
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
                     {/* Price Preview */}
-                    {consultationType && method && (
+                    {consultationType && (
                       <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
                         <div className="flex justify-between items-center">
                           <span className="text-white font-medium">
@@ -584,21 +549,22 @@ export default function Appointment() {
                         onClick={() =>
                           day.isAvailable && setSelectedDate(day.date)
                         }
-                        className={`text-center py-3 rounded-lg transition-all duration-300 ${day.isSelected
-                          ? "bg-amber-500 text-gray-900 font-bold"
-                          : day.isToday
+                        className={`text-center py-3 rounded-lg transition-all duration-300 ${
+                          day.isSelected
+                            ? "bg-amber-500 text-gray-900 font-bold"
+                            : day.isToday
                             ? "bg-amber-500/20 text-amber-400 border border-amber-500/50"
                             : day.isAvailable
-                              ? "text-gray-300 hover:bg-gray-700 hover:text-white"
-                              : "text-gray-600 cursor-not-allowed"
-                          } ${!day.isCurrentMonth ? "opacity-30" : ""}`}
+                            ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+                            : "text-gray-600 cursor-not-allowed"
+                        } ${!day.isCurrentMonth ? "opacity-30" : ""}`}
                       >
                         {day.day}
                       </button>
                     ))}
                   </div>
 
-                  {/* Time Slots - Luôn luôn có sẵn */}
+                  {/* Time Slots */}
                   {selectedDate && (
                     <div className="mb-8">
                       <h3 className="text-lg font-medium text-white mb-4">
@@ -606,14 +572,15 @@ export default function Appointment() {
                         {selectedDate.toLocaleDateString("vi-VN")}
                       </h3>
                       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                        {timeSlots.map((slot, i) => (
+                        {TIME_SLOTS.map((slot, i) => (
                           <button
                             key={i}
                             onClick={() => setSelectedTime(slot.time)}
-                            className={`text-center py-3 border rounded-lg transition-all duration-300 ${slot.time === selectedTime
-                              ? "bg-amber-500 text-gray-900 border-amber-500 font-bold"
-                              : "border-gray-600 text-gray-300 hover:border-amber-500 hover:text-amber-400"
-                              }`}
+                            className={`text-center py-3 border rounded-lg transition-all duration-300 ${
+                              slot.time === selectedTime
+                                ? "bg-amber-500 text-gray-900 border-amber-500 font-bold"
+                                : "border-gray-600 text-gray-300 hover:border-amber-500 hover:text-amber-400"
+                            }`}
                           >
                             {slot.time}
                           </button>
@@ -630,12 +597,13 @@ export default function Appointment() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {lawyers.slice(0, 4).map((lawyer) => (
                         <div
-                          key={lawyer.id}
-                          onClick={() => setSelectedLawyer(lawyer.id)}
-                          className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${selectedLawyer === lawyer.id
-                            ? "border-amber-500 bg-amber-500/10"
-                            : "border-gray-600 hover:border-gray-500"
-                            }`}
+                          key={lawyer.lawyerId}
+                          onClick={() => setSelectedLawyer(lawyer.lawyerId.toString())}
+                          className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
+                            selectedLawyer === lawyer.lawyerId.toString()
+                              ? "border-amber-500 bg-amber-500/10"
+                              : "border-gray-600 hover:border-gray-500"
+                          }`}
                         >
                           <div className="flex items-start space-x-3">
                             <img
@@ -648,7 +616,7 @@ export default function Appointment() {
                                 {lawyer.name}
                               </h4>
                               <p className="text-gray-400 text-xs mt-1">
-                                {lawyer.specialties?.slice(0, 2).join(", ") || "Tư vấn pháp lý"}
+                                {lawyer.specialties || "Tư vấn pháp lý"}
                               </p>
                               <div className="flex items-center mt-2">
                                 <Star className="w-3 h-3 text-yellow-500 fill-current" />
@@ -659,6 +627,11 @@ export default function Appointment() {
                                   • {lawyer.experience || "5+ năm"}
                                 </span>
                               </div>
+                              {lawyer.consultationFee && (
+                                <div className="text-amber-400 text-xs mt-1">
+                                  {lawyer.consultationFee.toLocaleString()} VNĐ/giờ
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -685,13 +658,7 @@ export default function Appointment() {
                         <div className="flex justify-between">
                           <span className="text-gray-300">Loại tư vấn:</span>
                           <span className="text-white font-medium">
-                            {getConsultationTypeInfo()?.label}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-300">Phương thức:</span>
-                          <span className="text-white font-medium">
-                            {getMethodInfo()?.label}
+                            {getConsultationTypeInfo()?.lawtypeName}
                           </span>
                         </div>
                         <div className="flex justify-between">
@@ -717,45 +684,6 @@ export default function Appointment() {
                       </div>
                     </div>
 
-                    {/* Customer Information */}
-                    <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
-                      <h3 className="text-lg font-semibold text-white mb-4">
-                        Thông tin liên hệ
-                      </h3>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Email nhận thông báo{" "}
-                            <span className="text-red-400">*</span>
-                          </label>
-                          <input
-                            type="email"
-                            value={customerEmail}
-                            onChange={(e) => setCustomerEmail(e.target.value)}
-                            placeholder="your.email@example.com"
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-colors"
-                            required
-                          />
-                          <p className="text-xs text-gray-400 mt-1">
-                            Email xác nhận đặt lịch sẽ được gửi đến địa chỉ này
-                          </p>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Ghi chú thêm (tùy chọn)
-                          </label>
-                          <textarea
-                            value={customerNotes}
-                            onChange={(e) => setCustomerNotes(e.target.value)}
-                            placeholder="Mô tả chi tiết vấn đề cần tư vấn hoặc yêu cầu đặc biệt..."
-                            rows={4}
-                            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-colors resize-none"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Price Summary */}
                     <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-6">
                       <div className="flex justify-between items-center">
@@ -765,6 +693,38 @@ export default function Appointment() {
                         <span className="text-amber-400 font-bold text-2xl">
                           {calculatedPrice} VNĐ
                         </span>
+                      </div>
+                    </div>
+
+                    {/* Request Message */}
+                    <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                      <h3 className="text-lg font-semibold text-white mb-4">
+                        Ghi chú yêu cầu
+                      </h3>
+                      <textarea
+                        value={requestMessage}
+                        onChange={(e) => setRequestMessage(e.target.value)}
+                        placeholder="Mô tả chi tiết vấn đề cần tư vấn hoặc yêu cầu đặc biệt..."
+                        className="w-full h-24 bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
+                        maxLength={500}
+                      />
+                      <div className="text-right text-xs text-gray-400 mt-2">
+                        {requestMessage.length}/500 ký tự
+                      </div>
+                    </div>
+
+                    {/* Payment Info */}
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                      <h4 className="text-blue-400 font-semibold mb-2 flex items-center">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Thông tin thanh toán
+                      </h4>
+                      <div className="text-gray-300 text-sm space-y-1">
+                        <p>• Sau khi xác nhận, bạn sẽ được chuyển đến trang thanh toán VNPay</p>
+                        <p>• Lịch hẹn chỉ được xác nhận sau khi thanh toán thành công</p>
+                        <p>• Hỗ trợ thanh toán qua ATM, Internet Banking, QR Code</p>
                       </div>
                     </div>
 
@@ -830,10 +790,10 @@ export default function Appointment() {
                     {isSubmitting ? (
                       <div className="flex items-center">
                         <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-900 border-t-transparent mr-2"></div>
-                        Đang xử lý...
+                        Đang tạo đơn...
                       </div>
                     ) : (
-                      "Xác nhận đặt lịch"
+                      "Đặt lịch & Thanh toán"
                     )}
                   </button>
                 )}
@@ -853,13 +813,7 @@ export default function Appointment() {
                       <div className="flex justify-between mb-3">
                         <span className="text-gray-400">Loại tư vấn:</span>
                         <span className="font-medium text-white">
-                          {getConsultationTypeInfo()?.label || "Chưa chọn"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between mb-3">
-                        <span className="text-gray-400">Phương thức:</span>
-                        <span className="font-medium text-white">
-                          {getMethodInfo()?.label || "Chưa chọn"}
+                          {getConsultationTypeInfo()?.lawtypeName || "Chưa chọn"}
                         </span>
                       </div>
                       {selectedDate && (

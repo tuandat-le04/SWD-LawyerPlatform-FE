@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowLeft, User, Phone } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { register, isAuthenticated } = useAuth();
+    
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -17,6 +21,14 @@ export default function Register() {
 
     const [errors, setErrors] = useState({});
     const [submitMessage, setSubmitMessage] = useState('');
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            const from = location.state?.from?.pathname || '/';
+            navigate(from, { replace: true });
+        }
+    }, [isAuthenticated, navigate, location]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -75,34 +87,63 @@ export default function Register() {
         setErrors({});
 
         // Validate form
-        const newErrors = {};
-        if (!formData.name) newErrors.name = 'Vui lòng nhập tên';
-        if (!formData.email) newErrors.email = 'Vui lòng nhập email';
-        if (!formData.phone) newErrors.phone = 'Vui lòng nhập số điện thoại';
-        if (!formData.password) newErrors.password = 'Vui lòng nhập mật khẩu';
-        if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+        if (!validateForm()) {
             return;
         }
 
         setIsLoading(true);
-        // Dữ liệu mẫu: chỉ cần lưu user vào localStorage
-        setTimeout(() => {
-            const user = {
+
+        try {
+            const userData = {
                 name: formData.name,
                 email: formData.email,
                 phone: formData.phone,
-                id: Math.random().toString(36).substr(2, 9),
-                role: 'customer',
+                password: formData.password,
+                confirmPassword: formData.confirmPassword,
+                role: 'Customer' // Default role
             };
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('userToken', 'sample-token');
+
+            const result = await register(userData);
+            
+            if (result.success) {
+                setSubmitMessage('Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.');
+                // Redirect to login page after successful registration
+                setTimeout(() => {
+                    navigate('/login', { 
+                        state: { 
+                            message: 'Đăng ký thành công! Vui lòng đăng nhập.',
+                            email: formData.email
+                        } 
+                    });
+                }, 2000);
+            } else {
+                // Handle validation errors from backend
+                if (result.errors && Array.isArray(result.errors)) {
+                    const newErrors = {};
+                    result.errors.forEach(error => {
+                        if (error.includes('Email')) {
+                            newErrors.email = error;
+                        } else if (error.includes('Password') || error.includes('Mật khẩu')) {
+                            newErrors.password = error;
+                        } else if (error.includes('Name') || error.includes('Tên')) {
+                            newErrors.name = error;
+                        } else if (error.includes('Phone') || error.includes('Số điện thoại')) {
+                            newErrors.phone = error;
+                        } else {
+                            setSubmitMessage(error);
+                        }
+                    });
+                    setErrors(newErrors);
+                } else {
+                    setSubmitMessage(result.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+                }
+            }
+        } catch (error) {
+            console.error('Register error:', error);
+            setSubmitMessage('Có lỗi xảy ra. Vui lòng thử lại.');
+        } finally {
             setIsLoading(false);
-            setSubmitMessage('Đăng ký thành công!');
-            // Chuyển về trang chủ sau đăng ký
-            setTimeout(() => navigate('/'), 1200);
-        }, 1000);
+        }
     };
 
     const handleBackClick = () => {
