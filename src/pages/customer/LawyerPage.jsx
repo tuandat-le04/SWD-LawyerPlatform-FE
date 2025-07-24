@@ -275,7 +275,7 @@ export default function LawyersPage() {
                   <div className="flex items-start space-x-4">
                     <div className="relative">
                       <img
-                        src={lawyer.avatar || "public/images/avatar.png"}
+                        src="../public/images/avatar.png"
                         alt={lawyer.name}
                         className="relative w-20 h-20 rounded-full object-cover border-2 border-amber-500/30 group-hover:border-amber-500/70 transition-all duration-300 group-hover:scale-110"
                       />
@@ -302,9 +302,6 @@ export default function LawyersPage() {
 
                 {/* Card Content */}
                 <div className="px-8 pb-8 space-y-4">
-                  {/* Success Rate & Cases */}
-                  {/* Đã xóa cases */}
-
                   {/* Specialties */}
                   <div>
                     <h4 className="font-medium text-white mb-2 text-sm group-hover:text-amber-400 transition-colors duration-300">
@@ -448,7 +445,7 @@ export default function LawyersPage() {
             <div className="relative bg-gray-800 rounded-3xl p-8 border border-gray-700 shadow-2xl">
               <div className="text-center">
                 <img
-                  src={testimonials[currentTestimonial].avatar || "/placeholder.svg"}
+                  src="../public/images/avatar.png"
                   alt={testimonials[currentTestimonial].name}
                   className="w-16 h-16 rounded-full mx-auto mb-4 border-2 border-amber-500"
                 />
