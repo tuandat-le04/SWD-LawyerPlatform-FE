@@ -1,4 +1,3 @@
-import { Button } from 'bootstrap'
 import React, { useState } from 'react'
 import { useNavigate, NavLink } from 'react-router-dom'
 import AuthButton from '../AuthButton'
@@ -48,15 +47,17 @@ export default function CustomerHeader() {
                 (isActive ? 'text-white font-semibold' : 'text-gray-400 hover:text-amber-400')
               }
             >
-              TRANG CHỦ
               {({ isActive }) => (
-                <span
-                  className={
-                    'absolute -bottom-1 left-0 h-0.5 bg-amber-400 transition-all duration-300 ' +
-                    (isActive ? 'w-full' : 'w-0 group-hover:w-full')
-                  }
-                  style={{ width: isActive ? '100%' : undefined }}
-                ></span>
+                <>
+                  TRANG CHỦ
+                  <span
+                    className={
+                      'absolute -bottom-1 left-0 h-0.5 bg-amber-400 transition-all duration-300 ' +
+                      (isActive ? 'w-full' : 'w-0 group-hover:w-full')
+                    }
+                    style={{ width: isActive ? '100%' : undefined }}
+                  ></span>
+                </>
               )}
             </NavLink>
             <NavLink
@@ -66,15 +67,17 @@ export default function CustomerHeader() {
                 (isActive ? 'text-white' : 'text-gray-400 hover:text-amber-400')
               }
             >
-              ĐỘI NGŨ
               {({ isActive }) => (
-                <span
-                  className={
-                    'absolute -bottom-1 left-0 h-0.5 bg-amber-400 transition-all duration-300 ' +
-                    (isActive ? 'w-full' : 'w-0 group-hover:w-full')
-                  }
-                  style={{ width: isActive ? '100%' : undefined }}
-                ></span>
+                <>
+                  ĐỘI NGŨ
+                  <span
+                    className={
+                      'absolute -bottom-1 left-0 h-0.5 bg-amber-400 transition-all duration-300 ' +
+                      (isActive ? 'w-full' : 'w-0 group-hover:w-full')
+                    }
+                    style={{ width: isActive ? '100%' : undefined }}
+                  ></span>
+                </>
               )}
             </NavLink>
             <NavLink
@@ -91,15 +94,17 @@ export default function CustomerHeader() {
                 (isActive ? 'text-white' : 'text-gray-400 hover:text-amber-400')
               }
             >
-              LIÊN HỆ
               {({ isActive }) => (
-                <span
-                  className={
-                    'absolute -bottom-1 left-0 h-0.5 bg-amber-400 transition-all duration-300 ' +
-                    (isActive ? 'w-full' : 'w-0 group-hover:w-full')
-                  }
-                  style={{ width: isActive ? '100%' : undefined }}
-                ></span>
+                <>
+                  LIÊN HỆ
+                  <span
+                    className={
+                      'absolute -bottom-1 left-0 h-0.5 bg-amber-400 transition-all duration-300 ' +
+                      (isActive ? 'w-full' : 'w-0 group-hover:w-full')
+                    }
+                    style={{ width: isActive ? '100%' : undefined }}
+                  ></span>
+                </>
               )}
             </NavLink>
             <AuthButton />

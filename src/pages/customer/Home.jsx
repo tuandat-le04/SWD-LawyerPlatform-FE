@@ -89,6 +89,7 @@ export default function Home() {
                   </div>
                 </button>
                 <button
+                  onClick={() => navigate("/legal-forms")}
                   className="border-2 border-amber-500 text-amber-500 bg-transparent px-8 py-4 rounded-xl hover:bg-amber-500 hover:text-gray-900 transition-all duration-300 font-semibold">
                   <div className="flex items-center justify-center space-x-2">
                     <FileText className="h-5 w-5" />

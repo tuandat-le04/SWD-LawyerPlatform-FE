@@ -44,10 +44,11 @@ api.interceptors.response.use(
       const accessToken = localStorage.getItem("accessToken");
       const refreshToken = localStorage.getItem("refreshToken");
       if (accessToken && refreshToken) {
+        console.log("Attempting to refresh token with:", {"Token": accessToken, "RefreshToken": refreshToken}); // Thêm log này
         try {
           const refreshRes = await axios.post("/api/Auth/refresh-token", {
-            token: accessToken,
-            refreshToken: refreshToken,
+            Token: accessToken, // Thay đổi từ token sang Token
+            RefreshToken: refreshToken, // Thay đổi từ refreshToken sang RefreshToken
           });
           // Nếu refresh thành công, lưu token mới và thử lại request
           if (refreshRes.data?.token) {

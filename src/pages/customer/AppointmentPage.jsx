@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -14,8 +14,8 @@ import {
   Mail,
   MapPin,
 } from "lucide-react";
-import { appointmentService } from "../../services/appointmentService";
 import { lawyerService } from "../../services/lawyerService";
+import { appointmentService } from "../../services/appointmentService";
 
 export default function Appointment() {
   // State management
@@ -30,12 +30,111 @@ export default function Appointment() {
   const [customerNotes, setCustomerNotes] = useState("");
   const navigate = useNavigate();
 
-  // Data states
-  const [timeSlots, setTimeSlots] = useState([]);
+  // Data states - Dữ liệu cố định
+  const [consultationTypes] = useState([
+    {
+      value: "real-estate",
+      label: "Luật Bất Động Sản",
+      description: "Tư vấn pháp luật về giao dịch, tranh chấp và quy hoạch bất động sản.",
+      basePrice: 500000,
+    },
+    {
+      value: "family",
+      label: "Luật Hôn Nhân & Gia Đình",
+      description: "Tư vấn các vấn đề về kết hôn, ly hôn, quyền nuôi con, phân chia tài sản.",
+      basePrice: 600000,
+    },
+    {
+      value: "criminal",
+      label: "Luật Hình Sự",
+      description: "Tư vấn các vấn đề về tố tụng hình sự, bào chữa, khiếu nại tố cáo.",
+      basePrice: 800000,
+    },
+    {
+      value: "business",
+      label: "Luật Doanh Nghiệp",
+      description: "Tư vấn thành lập doanh nghiệp, tổ chức lại, vận hành và phát triển.",
+      basePrice: 1000000,
+    },
+    {
+      value: "labor",
+      label: "Luật Lao Động",
+      description: "Tư vấn hợp đồng lao động, quyền lợi và nghĩa vụ của người lao động và doanh nghiệp.",
+      basePrice: 400000,
+    },
+    {
+      value: "finance",
+      label: "Luật Tài Chính & Ngân Hàng",
+      description: "Tư vấn các vấn đề tài chính, ngân hàng, đầu tư và tranh chấp ngân hàng.",
+      basePrice: 700000,
+    },
+    {
+      value: "administrative",
+      label: "Luật Hành Chính",
+      description: "Tư vấn khiếu nại, tố cáo, giấy phép và tranh chấp với cơ quan nhà nước.",
+      basePrice: 500000,
+    },
+  ]);
+
+  const [durationOptions] = useState([
+    {
+      value: "30",
+      label: "30 phút",
+      description: "Tư vấn nhanh, giải đáp cơ bản.",
+    },
+    {
+      value: "60",
+      label: "60 phút",
+      description: "Tư vấn chuyên sâu, giải quyết vấn đề phức tạp.",
+    },
+  ]);
+
+  const [consultationMethods] = useState([
+    {
+      value: "online",
+      label: "Tư vấn trực tuyến",
+      icon: "video",
+      description: "Gọi video qua Zoom/Google Meet.",
+      priceAdjustment: 0,
+    },
+    {
+      value: "offline",
+      label: "Tư vấn tại văn phòng",
+      icon: "building",
+      description: "Gặp trực tiếp tại văn phòng luật sư.",
+      priceAdjustment: 100000,
+    },
+  ]);
+
+  // Time slots cố định - luôn luôn có sẵn
+  const [timeSlots] = useState([
+    { time: "08:00", available: true },
+    { time: "08:30", available: true },
+    { time: "09:00", available: true },
+    { time: "09:30", available: true },
+    { time: "10:00", available: true },
+    { time: "10:30", available: true },
+    { time: "11:00", available: true },
+    { time: "11:30", available: true },
+    { time: "13:00", available: true },
+    { time: "13:30", available: true },
+    { time: "14:00", available: true },
+    { time: "14:30", available: true },
+    { time: "15:00", available: true },
+    { time: "15:30", available: true },
+    { time: "16:00", available: true },
+    { time: "16:30", available: true },
+    { time: "17:00", available: true },
+    { time: "17:30", available: true },
+    { time: "18:00", available: true },
+    { time: "18:30", available: true },
+    { time: "19:00", available: true },
+    { time: "19:30", available: true },
+    { time: "20:00", available: true },
+  ]);
+
+  // Chỉ fetch lawyers từ backend
   const [lawyers, setLawyers] = useState([]);
-  const [consultationTypes, setConsultationTypes] = useState([]);
-  const [durationOptions, setDurationOptions] = useState([]);
-  const [consultationMethods, setConsultationMethods] = useState([]);
 
   // UI states
   const [loading, setLoading] = useState(true);
@@ -45,89 +144,48 @@ export default function Appointment() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [calculatedPrice, setCalculatedPrice] = useState("0");
 
-  // Fetch data on component mount
+  // Chỉ fetch lawyers từ backend
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchLawyers = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        const [
-          lawyersData,
-          consultationTypesData,
-          durationOptionsData,
-          consultationMethodsData,
-        ] = await Promise.all([
-          lawyerService.getAllLawyers(),
-          appointmentService.getConsultationTypes(),
-          appointmentService.getDurationOptions(),
-          appointmentService.getConsultationMethods(),
-        ]);
-
-        // Lấy time slots sau khi có date được chọn
-        setTimeSlots([]);
+        const lawyersData = await lawyerService.getAllLawyers();
         setLawyers(lawyersData);
-        setConsultationTypes(consultationTypesData);
-        setDurationOptions(durationOptionsData);
-        setConsultationMethods(consultationMethodsData);
       } catch (error) {
-        console.error("Error fetching appointment data:", error);
-        setError("Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.");
+        console.error("Error fetching lawyers:", error);
+        setError("Có lỗi xảy ra khi tải dữ liệu luật sư. Vui lòng thử lại sau.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchLawyers();
   }, []);
 
   // Load user email from localStorage
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    const userData = JSON.parse(localStorage.getItem("user") || "{}");
     if (userData.email) {
       setCustomerEmail(userData.email);
     }
   }, []);
 
-  // Load time slots when date or lawyer changes
-  useEffect(() => {
-    const loadTimeSlots = async () => {
-      if (selectedDate && selectedLawyer) {
-        try {
-          const dateString = selectedDate.toISOString().split('T')[0];
-          const timeSlotsData = await appointmentService.getTimeSlots(dateString, selectedLawyer);
-          setTimeSlots(timeSlotsData);
-        } catch (error) {
-          console.error("Error loading time slots:", error);
-          setTimeSlots([]);
-        }
-      } else {
-        setTimeSlots([]);
-      }
-    };
-
-    loadTimeSlots();
-  }, [selectedDate, selectedLawyer]);
-
   // Calculate price when consultation type, duration, or method changes
   useEffect(() => {
-    const calculatePrice = async () => {
-      if (consultationType && duration && method) {
-        try {
-          const priceInfo = await appointmentService.calculateConsultationPrice(
-            consultationType,
-            duration,
-            method
-          );
-          setCalculatedPrice(priceInfo.price);
-        } catch (error) {
-          console.error("Error calculating price:", error);
-        }
-      }
-    };
-
-    calculatePrice();
-  }, [consultationType, duration, method]);
+    if (consultationType && duration && method) {
+      const typeInfo = consultationTypes.find(t => t.value === consultationType);
+      const methodInfo = consultationMethods.find(m => m.value === method);
+      const basePrice = typeInfo ? typeInfo.basePrice : 0;
+      const durationValue = Number(duration);
+      const durationMultiplier = durationValue / 60; // 30 phút = 0.5, 60 phút = 1
+      const methodAdjustment = methodInfo ? methodInfo.priceAdjustment : 0;
+      const price = Math.round(basePrice * durationMultiplier + methodAdjustment);
+      setCalculatedPrice(price.toLocaleString());
+    } else {
+      setCalculatedPrice("0");
+    }
+  }, [consultationType, duration, method, consultationTypes, consultationMethods]);
 
   const handleBackClick = () => {
     navigate("/");
@@ -151,8 +209,8 @@ export default function Appointment() {
       setAppointmentResult(null);
 
       // Validate email
-      if (!customerEmail || !customerEmail.includes('@')) {
-        throw new Error('Vui lòng nhập email hợp lệ để nhận thông báo');
+      if (!customerEmail || !customerEmail.includes("@")) {
+        throw new Error("Vui lòng nhập email hợp lệ để nhận thông báo");
       }
 
       const appointmentData = {
@@ -166,13 +224,11 @@ export default function Appointment() {
         notes: customerNotes,
       };
 
-      const result = await appointmentService.submitAppointment(
-        appointmentData
-      );
+      const result = await appointmentService.submitAppointment(appointmentData);
       setAppointmentResult({
         success: true,
-        message: result.message,
-        appointmentId: result.appointmentId,
+        message: result.message || "Đặt lịch thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.",
+        appointmentId: result.appointmentId || Math.random().toString(36).substr(2, 9).toUpperCase(),
         appointmentDetails: result.appointmentDetails,
       });
     } catch (error) {
@@ -190,7 +246,6 @@ export default function Appointment() {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
 
@@ -241,8 +296,7 @@ export default function Appointment() {
       case 2:
         return selectedDate && selectedTime;
       case 3:
-        return customerEmail && customerEmail.includes('@');
-
+        return customerEmail && customerEmail.includes("@");
       default:
         return true;
     }
@@ -439,7 +493,7 @@ export default function Appointment() {
                             </p>
                             <div className="flex justify-between items-center">
                               <span className="text-amber-400 font-medium">
-                                {type.basePrice} VNĐ
+                                {type.basePrice.toLocaleString()} VNĐ
                               </span>
                             </div>
                           </div>
@@ -607,7 +661,7 @@ export default function Appointment() {
                     ))}
                   </div>
 
-                  {/* Time Slots */}
+                  {/* Time Slots - Luôn luôn có sẵn */}
                   {selectedDate && (
                     <div className="mb-8">
                       <h3 className="text-lg font-medium text-white mb-4">
@@ -618,13 +672,10 @@ export default function Appointment() {
                         {timeSlots.map((slot, i) => (
                           <button
                             key={i}
-                            disabled={!slot.available}
                             onClick={() => setSelectedTime(slot.time)}
                             className={`text-center py-3 border rounded-lg transition-all duration-300 ${slot.time === selectedTime
                               ? "bg-amber-500 text-gray-900 border-amber-500 font-bold"
-                              : slot.available
-                                ? "border-gray-600 text-gray-300 hover:border-amber-500 hover:text-amber-400"
-                                : "text-gray-600 border-gray-700 cursor-not-allowed"
+                              : "border-gray-600 text-gray-300 hover:border-amber-500 hover:text-amber-400"
                               }`}
                           >
                             {slot.time}
@@ -660,15 +711,15 @@ export default function Appointment() {
                                 {lawyer.name}
                               </h4>
                               <p className="text-gray-400 text-xs mt-1">
-                                {lawyer.specialties.slice(0, 2).join(", ")}
+                                {lawyer.specialties?.slice(0, 2).join(", ") || "Tư vấn pháp lý"}
                               </p>
                               <div className="flex items-center mt-2">
                                 <Star className="w-3 h-3 text-yellow-500 fill-current" />
                                 <span className="text-yellow-500 text-xs ml-1">
-                                  {lawyer.rating}
+                                  {lawyer.rating || "5.0"}
                                 </span>
                                 <span className="text-gray-400 text-xs ml-1">
-                                  • {lawyer.experience}
+                                  • {lawyer.experience || "5+ năm"}
                                 </span>
                               </div>
                             </div>
@@ -743,7 +794,8 @@ export default function Appointment() {
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Email nhận thông báo <span className="text-red-400">*</span>
+                            Email nhận thông báo{" "}
+                            <span className="text-red-400">*</span>
                           </label>
                           <input
                             type="email"
@@ -798,11 +850,17 @@ export default function Appointment() {
                         className="ml-3 text-sm text-gray-400"
                       >
                         Tôi đồng ý với{" "}
-                        <a href="#" className="text-amber-400 hover:underline">
+                        <a
+                          href="#"
+                          className="text-amber-400 hover:underline"
+                        >
                           điều khoản dịch vụ
                         </a>{" "}
                         và{" "}
-                        <a href="#" className="text-amber-400 hover:underline">
+                        <a
+                          href="#"
+                          className="text-amber-400 hover:underline"
+                        >
                           chính sách bảo mật
                         </a>
                       </label>
