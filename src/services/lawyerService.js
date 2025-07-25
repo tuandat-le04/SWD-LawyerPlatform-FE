@@ -1,14 +1,11 @@
+
 // Mock data for lawyers
 const lawyers = [
   {
     id: 1,
     name: "Luật sư Nguyễn Ngọc Quỳnh Như",
     title: "Luật sư Trưởng",
-    specialties: [
-      "Luật Dân sự",
-      "Luật Hôn nhân & Gia đình",
-      "Luật Bất động sản",
-    ],
+    specialties: ["Luật Dân sự", "Luật Hôn nhân & Gia đình", "Luật Bất động sản"],
     experience: "15 năm kinh nghiệm",
     rating: 4.9,
     reviews: 127,
@@ -37,8 +34,7 @@ const lawyers = [
     languages: ["Tiếng Việt", "English", "中文"],
     consultationFee: "600.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
-    description:
-      "Chuyên gia tư vấn pháp lý cho doanh nghiệp, có kinh nghiệm làm việc tại các công ty luật hàng đầu.",
+    description: "Chuyên gia tư vấn pháp lý cho doanh nghiệp, có kinh nghiệm làm việc tại các công ty luật hàng đầu.",
     successRate: "96%",
     cases: 320,
     verified: true,
@@ -57,8 +53,7 @@ const lawyers = [
     languages: ["Tiếng Việt", "English"],
     consultationFee: "400.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
-    description:
-      "Luật sư trẻ năng động, chuyên về luật hình sự và bào chữa. Tỷ lệ thành công cao trong các vụ án.",
+    description: "Luật sư trẻ năng động, chuyên về luật hình sự và bào chữa. Tỷ lệ thành công cao trong các vụ án.",
     successRate: "94%",
     cases: 180,
     verified: true,
@@ -97,8 +92,7 @@ const lawyers = [
     languages: ["Tiếng Việt", "English", "Français"],
     consultationFee: "1.000.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
-    description:
-      "Luật sư hàng đầu trong lĩnh vực đầu tư và M&A, có bằng LLM từ Harvard Law School.",
+    description: "Luật sư hàng đầu trong lĩnh vực đầu tư và M&A, có bằng LLM từ Harvard Law School.",
     successRate: "100%",
     cases: 450,
     verified: true,
@@ -117,14 +111,13 @@ const lawyers = [
     languages: ["Tiếng Việt", "English"],
     consultationFee: "350.000 VNĐ/giờ",
     avatar: "../src/assets/images/sofia.jpg",
-    description:
-      "Luật sư trẻ chuyên về luật y tế và bảo vệ quyền lợi người tiêu dùng.",
+    description: "Luật sư trẻ chuyên về luật y tế và bảo vệ quyền lợi người tiêu dùng.",
     successRate: "92%",
     cases: 95,
     verified: true,
     online: true,
   },
-];
+]
 
 // Mock data for testimonials
 const testimonials = [
@@ -141,8 +134,7 @@ const testimonials = [
     id: 2,
     name: "Trần Thị Bình",
     role: "Chủ doanh nghiệp",
-    content:
-      "Tôi rất hài lòng với chất lượng dịch vụ. Luật sư tận tâm và có kinh nghiệm thực tế cao.",
+    content: "Tôi rất hài lòng với chất lượng dịch vụ. Luật sư tận tâm và có kinh nghiệm thực tế cao.",
     rating: 5,
     avatar: "../src/assets/images/sofia.jpg",
   },
@@ -150,12 +142,11 @@ const testimonials = [
     id: 3,
     name: "Lê Minh Cường",
     role: "Khách hàng cá nhân",
-    content:
-      "Quy trình tư vấn rõ ràng, minh bạch. Giá cả hợp lý và kết quả vượt mong đợi.",
+    content: "Quy trình tư vấn rõ ràng, minh bạch. Giá cả hợp lý và kết quả vượt mong đợi.",
     rating: 4,
     avatar: "../src/assets/images/sofia.jpg",
   },
-];
+]
 
 // Mock data for FAQs
 const faqs = [
@@ -179,72 +170,66 @@ const faqs = [
     answer:
       "Có, chúng tôi hỗ trợ tư vấn trực tuyến qua video call, điện thoại hoặc chat. Đặc biệt thuận tiện cho khách hàng ở xa.",
   },
-];
+]
 
 // Mock API functions
 export const lawyerService = {
   // Get all lawyers
   getAllLawyers: async () => {
     // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return lawyers;
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    return lawyers
   },
 
   // Get lawyer by ID
   getLawyerById: async (id) => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return lawyers.find((lawyer) => lawyer.id === id);
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    return lawyers.find((lawyer) => lawyer.id === id)
   },
 
   // Search lawyers
   searchLawyers: async (params) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    
     return lawyers.filter((lawyer) => {
       const matchesSearch =
         !params.searchTerm ||
         lawyer.name.toLowerCase().includes(params.searchTerm.toLowerCase()) ||
-        lawyer.specialties.some((specialty) =>
-          specialty
-            .toLowerCase()
-            .includes(params.searchTerm?.toLowerCase() || "")
-        );
-      const matchesSpecialty =
-        !params.specialty || lawyer.specialties.includes(params.specialty);
-      const matchesLocation =
-        !params.location || lawyer.location === params.location;
+        lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(params.searchTerm?.toLowerCase() || ""))
+      const matchesSpecialty = !params.specialty || lawyer.specialties.includes(params.specialty)
+      const matchesLocation = !params.location || lawyer.location === params.location
 
-      return matchesSearch && matchesSpecialty && matchesLocation;
-    });
+      return matchesSearch && matchesSpecialty && matchesLocation
+    })
   },
 
   // Get all testimonials
   getAllTestimonials: async () => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return testimonials;
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    return testimonials
   },
 
   // Get all FAQs
   getAllFaqs: async () => {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    return faqs;
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    return faqs
   },
 
   // Get all specialties
   getAllSpecialties: async () => {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    const specialties = new Set();
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    const specialties = new Set()
     lawyers.forEach((lawyer) => {
-      lawyer.specialties.forEach((specialty) => specialties.add(specialty));
-    });
-    return Array.from(specialties);
+      lawyer.specialties.forEach((specialty) => specialties.add(specialty))
+    })
+    return Array.from(specialties)
   },
 
   // Get all locations
   getAllLocations: async () => {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    const locations = new Set();
-    lawyers.forEach((lawyer) => locations.add(lawyer.location));
-    return Array.from(locations);
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    const locations = new Set()
+    lawyers.forEach((lawyer) => locations.add(lawyer.location))
+    return Array.from(locations)
   },
-};
+} 

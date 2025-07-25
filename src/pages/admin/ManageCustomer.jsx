@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import api from "../../services/api"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Users,
@@ -23,10 +24,11 @@ import {
   FileText,
   BarChart3,
   Settings,
+  Loader2,
 } from "lucide-react"
 
 const ManageCustomer = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
@@ -36,98 +38,14 @@ const ManageCustomer = () => {
   const [modalType, setModalType] = useState("") // 'add', 'edit', 'view', 'delete'
   const [selectedUser, setSelectedUser] = useState(null)
 
-  // Mock data
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Nguyễn Văn An",
-      email: "an.nguyen@email.com",
-      phone: "0901234567",
-      address: "123 Nguyễn Huệ, Q1, TP.HCM",
-      role: "client",
-      status: "active",
-      joinDate: "2024-01-15",
-      lastLogin: "2024-01-20 14:30",
-      totalSpent: 2500000,
-      totalAppointments: 5,
-      rating: 4.8,
-      avatar: "../public/images/avatar.png",
-      specialization: "Luật dân sự",
-      verified: true,
-    },
-    {
-      id: 2,
-      name: "Luật sư Trần Thị Bình",
-      email: "binh.tran@email.com",
-      phone: "0912345678",
-      address: "456 Lê Lợi, Q3, TP.HCM",
-      role: "lawyer",
-      status: "active",
-      joinDate: "2024-01-14",
-      lastLogin: "2024-01-20 16:45",
-      totalSpent: 0,
-      totalAppointments: 25,
-      rating: 4.9,
-      avatar: "../public/images/avatar.png",
-      specialization: "Luật hôn nhân gia đình",
-      verified: true,
-    },
-    {
-      id: 3,
-      name: "Lê Văn Cường",
-      email: "cuong.le@email.com",
-      phone: "0923456789",
-      address: "789 Võ Văn Tần, Q3, TP.HCM",
-      role: "client",
-      status: "pending",
-      joinDate: "2024-01-13",
-      lastLogin: "2024-01-19 09:15",
-      totalSpent: 800000,
-      totalAppointments: 2,
-      rating: 4.5,
-      avatar: "../public/images/avatar.png",
-      specialization: "Luật doanh nghiệp",
-      verified: false,
-    },
-    {
-      id: 4,
-      name: "Phạm Thị Dung",
-      email: "dung.pham@email.com",
-      phone: "0934567890",
-      address: "321 Hai Bà Trưng, Q1, TP.HCM",
-      role: "client",
-      status: "inactive",
-      joinDate: "2024-01-10",
-      lastLogin: "2024-01-18 11:20",
-      totalSpent: 1200000,
-      totalAppointments: 3,
-      rating: 4.2,
-      avatar: "../public/images/avatar.png",
-      specialization: "Luật lao động",
-      verified: true,
-    },
-    {
-      id: 5,
-      name: "Luật sư Hoàng Văn Em",
-      email: "em.hoang@email.com",
-      phone: "0945678901",
-      address: "654 Nguyễn Thị Minh Khai, Q3, TP.HCM",
-      role: "lawyer",
-      status: "active",
-      joinDate: "2024-01-12",
-      lastLogin: "2024-01-20 13:10",
-      totalSpent: 0,
-      totalAppointments: 18,
-      rating: 4.7,
-      avatar: "../public/images/avatar.png",
-      specialization: "Luật hình sự",
-      verified: true,
-    },
-  ])
+  // API state
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const sidebarItems = [
     { id: "dashboard", label: "Dashboard", icon: Home, path: "/admin" },
-    { id: "users", label: "Quản lý khách", icon: Users, path: "/admin/manageCustomer" },
+    { id: "users", label: "Quản lý khách", icon: Users, path: "/admin/manage-customer" },
     { id: "lawyers", label: "Quản lý luật sư", icon: Users, path: "/admin/lawyers" },
     { id: "appointments", label: "Quản lý lịch hẹn", icon: Calendar, path: "/admin/appointments" },
     { id: "services", label: "Quản lý dịch vụ", icon: FileText, path: "/admin/services" },
@@ -135,14 +53,57 @@ const ManageCustomer = () => {
     { id: "settings", label: "Cài đặt", icon: Settings, path: "/admin/settings" },
   ]
 
+  // Fetch users from API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const response = await api.get("/api/User")
+        setUsers(response.data || [])
+      } catch (err) {
+        console.error("Error fetching users:", err)
+        setError("Không thể tải danh sách khách hàng. Vui lòng thử lại.")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [])
+
+  //API Delete user
+  const handleDeleteUser = async (userId) => {
+    try {
+      setActionLoading(true)
+
+      await api.delete(`/User/${userId}`)
+
+
+      setUsers((prev) => prev.filter((user) => user.id !== userId))
+
+
+      setShowModal(false)
+
+
+      console.log("User deleted successfully")
+    } catch (err) {
+      console.error("Error deleting user:", err)
+      setError("Không thể xóa khách hàng. Vui lòng thử lại.")
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+
   // Filter users - only show clients
   const filteredUsers = users
-    .filter((user) => user.role === "client") // Only show clients
+    .filter((user) => user.role === "client" || !user.role) // Only show clients or users without role
     .filter((user) => {
       const matchesSearch =
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.phone.includes(searchTerm)
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.phone?.includes(searchTerm)
       return matchesSearch
     })
 
@@ -155,7 +116,7 @@ const ManageCustomer = () => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
-    }).format(amount)
+    }).format(amount || 0)
   }
 
   const getStatusColor = (status) => {
@@ -202,10 +163,7 @@ const ManageCustomer = () => {
     setShowModal(true)
   }
 
-  const handleDeleteUser = (userId) => {
-    setUsers((prev) => prev.filter((user) => user.id !== userId))
-    setShowModal(false)
-  }
+
 
   const UserModal = () => {
     if (!showModal) return null
@@ -247,9 +205,11 @@ const ManageCustomer = () => {
                   </button>
                   <button
                     onClick={() => handleDeleteUser(selectedUser?.id)}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+                    disabled={actionLoading}
                   >
-                    Xóa
+                    {actionLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                    <span>{actionLoading ? "Đang xóa..." : "Xóa"}</span>
                   </button>
                 </div>
               </div>
@@ -257,7 +217,7 @@ const ManageCustomer = () => {
               <div className="space-y-6">
                 <div className="flex items-center space-x-4">
                   <img
-                    src={selectedUser.avatar || "/placeholder.svg"}
+                    src={selectedUser.avatar || "/placeholder.svg?height=80&width=80"}
                     alt={selectedUser.name}
                     className="w-20 h-20 rounded-full object-cover"
                   />
@@ -265,12 +225,16 @@ const ManageCustomer = () => {
                     <h4 className="text-xl font-semibold text-white">{selectedUser.name}</h4>
                     <div className="flex items-center space-x-2 mt-1">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium border ${getRoleColor(selectedUser.role)}`}
+                        className={`px-2 py-1 rounded-full text-xs font-medium border ${getRoleColor(
+                          selectedUser.role,
+                        )}`}
                       >
                         Khách hàng
                       </span>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(selectedUser.status)}`}
+                        className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                          selectedUser.status,
+                        )}`}
                       >
                         {selectedUser.status === "active"
                           ? "Hoạt động"
@@ -311,39 +275,41 @@ const ManageCustomer = () => {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">Ngày tham gia:</span>
-                        <span className="text-white">{selectedUser.joinDate}</span>
+                        <span className="text-white">{selectedUser.joinDate || "N/A"}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">Lần cuối truy cập:</span>
-                        <span className="text-white">{selectedUser.lastLogin}</span>
+                        <span className="text-white">{selectedUser.lastLogin || "N/A"}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">Tổng lịch hẹn:</span>
-                        <span className="text-white">{selectedUser.totalAppointments}</span>
+                        <span className="text-white">{selectedUser.totalAppointments || 0}</span>
                       </div>
                       {selectedUser.role === "client" && (
                         <div className="flex items-center justify-between">
                           <span className="text-gray-400">Tổng chi tiêu:</span>
-                          <span className="text-white">{formatCurrency(selectedUser.totalSpent)}</span>
+                          <span className="text-white">{formatCurrency(selectedUser.totalSpent || 0)}</span>
                         </div>
                       )}
                       <div className="flex items-center justify-between">
                         <span className="text-gray-400">Đánh giá:</span>
                         <div className="flex items-center space-x-1">
                           <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="text-white">{selectedUser.rating}</span>
+                          <span className="text-white">{selectedUser.rating || "N/A"}</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div>
-                  <h5 className="text-lg font-semibold text-white mb-3">Chuyên môn</h5>
-                  <span className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-sm">
-                    {selectedUser.specialization}
-                  </span>
-                </div>
+                {selectedUser.specialization && (
+                  <div>
+                    <h5 className="text-lg font-semibold text-white mb-3">Chuyên môn</h5>
+                    <span className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-sm">
+                      {selectedUser.specialization}
+                    </span>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-4">
@@ -407,6 +373,18 @@ const ManageCustomer = () => {
     )
   }
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-4" />
+          <p className="text-gray-400">Đang tải danh sách khách hàng...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Mobile Sidebar Overlay */}
@@ -441,17 +419,14 @@ const ManageCustomer = () => {
           <nav className="space-y-2">
             {sidebarItems.map((item) => {
               const Icon = item.icon
-              const isActive = item.path === "/admin/manageCustomer"
+              const isActive = item.path === "/admin/manage-customer"
               return (
                 <button
                   key={item.id}
-                  onClick={() => {
-                    navigate(item.path)
-                    setSidebarOpen(false)
-                  }}
+                  onClick={() => { navigate(item.path); setSidebarOpen(false); }}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
-                    ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
-                    : "text-gray-300 hover:bg-gray-700/50 hover:text-white"
+                      ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
+                      : "text-gray-300 hover:bg-gray-700/50 hover:text-white"
                     }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -466,7 +441,7 @@ const ManageCustomer = () => {
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-700/50">
           <div className="flex items-center space-x-3">
             <img
-              src="../public/images/avatar.png"
+              src="/placeholder.svg?height=40&width=40"
               alt="Admin"
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -492,7 +467,6 @@ const ManageCustomer = () => {
                 <p className="text-gray-400">Quản lý tất cả khách hàng trong hệ thống</p>
               </div>
             </div>
-
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate("/login")}
@@ -506,13 +480,25 @@ const ManageCustomer = () => {
 
         {/* Content */}
         <main className="p-6">
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg mb-6 flex items-center justify-between">
+              <span>{error}</span>
+              <button onClick={() => setError(null)} className="text-red-300 hover:text-red-100 ml-4">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm">Tổng khách hàng</p>
-                  <p className="text-2xl font-bold text-white">{users.filter((u) => u.role === "client").length}</p>
+                  <p className="text-2xl font-bold text-white">
+                    {users.filter((u) => u.role === "client" || !u.role).length}
+                  </p>
                 </div>
                 <Users className="w-8 h-8 text-purple-400" />
               </div>
@@ -521,7 +507,9 @@ const ManageCustomer = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm">Đang hoạt động</p>
-                  <p className="text-2xl font-bold text-white">{users.filter((u) => u.role === "client" && u.status === "active").length}</p>
+                  <p className="text-2xl font-bold text-white">
+                    {users.filter((u) => (u.role === "client" || !u.role) && u.status === "active").length}
+                  </p>
                 </div>
                 <UserCheck className="w-8 h-8 text-green-400" />
               </div>
@@ -530,7 +518,13 @@ const ManageCustomer = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm">Tổng chi tiêu</p>
-                  <p className="text-2xl font-bold text-white">{formatCurrency(users.filter((u) => u.role === "client").reduce((sum, u) => sum + u.totalSpent, 0))}</p>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(
+                      users
+                        .filter((u) => u.role === "client" || !u.role)
+                        .reduce((sum, u) => sum + (u.totalSpent || 0), 0),
+                    )}
+                  </p>
                 </div>
                 <Star className="w-8 h-8 text-yellow-400" />
               </div>
@@ -551,11 +545,8 @@ const ManageCustomer = () => {
                     className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
-
               </div>
-              <div className="flex items-center space-x-2">
-                {/* Removed add user button */}
-              </div>
+              <div className="flex items-center space-x-2">{/* Add user button can be added here later */}</div>
             </div>
           </div>
 
@@ -579,7 +570,6 @@ const ManageCustomer = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Trạng thái
                     </th>
-
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Lịch hẹn
                     </th>
@@ -595,152 +585,165 @@ const ManageCustomer = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700/50">
-                  {paginatedUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-700/30 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="checkbox"
-                          checked={selectedUsers.includes(user.id)}
-                          onChange={() => handleSelectUser(user.id)}
-                          className="rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <img
-                            src={user.avatar || "/placeholder.svg"}
-                            alt={user.name}
-                            className="w-10 h-10 rounded-full object-cover"
+                  {paginatedUsers.length > 0 ? (
+                    paginatedUsers.map((user) => (
+                      <tr key={user.id} className="hover:bg-gray-700/30 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={selectedUsers.includes(user.id)}
+                            onChange={() => handleSelectUser(user.id)}
+                            className="rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
                           />
-                          <div className="ml-4">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-sm font-medium text-white">{user.name}</span>
-                              {user.verified && <UserCheck className="w-4 h-4 text-blue-400" />}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <img
+                              src={user.avatar || "/placeholder.svg?height=40&width=40"}
+                              alt={user.name}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                            <div className="ml-4">
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-medium text-white">{user.name}</span>
+                                {user.verified && <UserCheck className="w-4 h-4 text-blue-400" />}
+                              </div>
+                              <div className="text-sm text-gray-400">{user.email}</div>
+                              <div className="text-sm text-gray-400">{user.phone}</div>
                             </div>
-                            <div className="text-sm text-gray-400">{user.email}</div>
-                            <div className="text-sm text-gray-400">{user.phone}</div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(user.status)}`}
-                        >
-                          {user.status === "active"
-                            ? "Hoạt động"
-                            : user.status === "pending"
-                              ? "Chờ duyệt"
-                              : "Không hoạt động"}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{user.totalAppointments}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {formatCurrency(user.totalSpent)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="text-sm text-gray-300">{user.rating}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => handleAction("view", user)}
-                            className="text-blue-400 hover:text-blue-300 p-1"
-                            title="Xem chi tiết"
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                              user.status,
+                            )}`}
                           >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleAction("edit", user)}
-                            className="text-green-400 hover:text-green-300 p-1"
-                            title="Chỉnh sửa"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleAction("delete", user)}
-                            className="text-red-400 hover:text-red-300 p-1"
-                            title="Xóa"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                            {user.status === "active"
+                              ? "Hoạt động"
+                              : user.status === "pending"
+                                ? "Chờ duyệt"
+                                : "Không hoạt động"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {user.totalAppointments || 0}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                          {formatCurrency(user.totalSpent || 0)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center space-x-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            <span className="text-sm text-gray-300">{user.rating || "N/A"}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleAction("view", user)}
+                              className="text-blue-400 hover:text-blue-300 p-1"
+                              title="Xem chi tiết"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleAction("edit", user)}
+                              className="text-green-400 hover:text-green-300 p-1"
+                              title="Chỉnh sửa"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleAction("delete", user)}
+                              className="text-red-400 hover:text-red-300 p-1"
+                              title="Xóa"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="px-6 py-8 text-center text-gray-400">
+                        {searchTerm ? "Không tìm thấy khách hàng nào" : "Chưa có khách hàng nào"}
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
 
             {/* Pagination */}
-            <div className="bg-gray-700/30 px-6 py-3 flex items-center justify-between border-t border-gray-700/50">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-400">Hiển thị</span>
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) => {
-                    setItemsPerPage(Number(e.target.value))
-                    setCurrentPage(1)
-                  }}
-                  className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:border-blue-500"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
-                <span className="text-sm text-gray-400">trên tổng số {filteredUsers.length} khách hàng</span>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-
-                <div className="flex items-center space-x-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum
-                    if (totalPages <= 5) {
-                      pageNum = i + 1
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i
-                    } else {
-                      pageNum = currentPage - 2 + i
-                    }
-
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`px-3 py-1 rounded text-sm ${currentPage === pageNum
-                          ? "bg-blue-600 text-white"
-                          : "text-gray-400 hover:text-white hover:bg-gray-700"
-                          }`}
-                      >
-                        {pageNum}
-                      </button>
-                    )
-                  })}
+            {totalPages > 1 && (
+              <div className="bg-gray-700/30 px-6 py-3 flex items-center justify-between border-t border-gray-700/50">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-400">Hiển thị</span>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value))
+                      setCurrentPage(1)
+                    }}
+                    className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:border-blue-500"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                  </select>
+                  <span className="text-sm text-gray-400">trên tổng số {filteredUsers.length} khách hàng</span>
                 </div>
 
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <div className="flex items-center space-x-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum
+                      if (totalPages <= 5) {
+                        pageNum = i + 1
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i
+                      } else {
+                        pageNum = currentPage - 2 + i
+                      }
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-3 py-1 rounded text-sm ${currentPage === pageNum
+                              ? "bg-blue-600 text-white"
+                              : "text-gray-400 hover:text-white hover:bg-gray-700"
+                            }`}
+                        >
+                          {pageNum}
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </main>
       </div>

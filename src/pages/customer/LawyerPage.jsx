@@ -1,7 +1,7 @@
 "use client"
-
+import api from  "../../services/api"
 import React, { useState, useEffect } from "react"
-import { lawyerService } from "../../services/lawyerService"
+// Remove: import { lawyerService } from "../../services/lawyerService"
 
 export default function LawyersPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -31,15 +31,13 @@ export default function LawyersPage() {
       try {
         setLoading(true)
         setError(null)
-        const [lawyersData, testimonialsData, faqsData] = await Promise.all([
-          lawyerService.getAllLawyers(),
-          lawyerService.getAllTestimonials(),
-          lawyerService.getAllFaqs()
-        ])
-
+        // Fetch lawyers from API
+        const response = await api.get("/api/Lawyer")
+        const lawyersData = response.data || []
         setLawyers(lawyersData)
-        setTestimonials(testimonialsData)
-        setFaqs(faqsData)
+        // Testimonials and faqs can remain as empty arrays or static for now
+        setTestimonials([])
+        setFaqs([])
         setIsVisible(true)
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -48,7 +46,6 @@ export default function LawyersPage() {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [])
 
@@ -72,9 +69,8 @@ export default function LawyersPage() {
   const filteredLawyers = lawyers.filter((lawyer) => {
     const matchesSearch =
       lawyer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesSpecialty = !selectedSpecialty || lawyer.specialties.includes(selectedSpecialty)
-    // Đã xóa matchesLocation vì không còn location
+      (lawyer.specialties && lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(searchTerm.toLowerCase())))
+    const matchesSpecialty = !selectedSpecialty || (lawyer.specialties && lawyer.specialties.includes(selectedSpecialty))
     return matchesSearch && matchesSpecialty
   })
 
@@ -297,23 +293,20 @@ export default function LawyersPage() {
                       <h3 className="font-bold text-lg text-white mb-1 group-hover:text-amber-400 transition-colors duration-300">
                         {lawyer.name}
                       </h3>
-                      {/* Đã xóa phần reviews và location */}
+                      <div className="text-sm text-gray-400">{lawyer.email}</div>
+                      <div className="text-sm text-gray-400">{lawyer.phone}</div>
                     </div>
                   </div>
                 </div>
-
                 {/* Card Content */}
                 <div className="px-8 pb-8 space-y-4">
-                  {/* Success Rate & Cases */}
-                  {/* Đã xóa cases */}
-
                   {/* Specialties */}
                   <div>
                     <h4 className="font-medium text-white mb-2 text-sm group-hover:text-amber-400 transition-colors duration-300">
                       Chuyên môn
                     </h4>
                     <div className="flex flex-wrap gap-1">
-                      {lawyer.specialties.slice(0, 3).map((specialty, index) => (
+                      {lawyer.specialties && lawyer.specialties.slice(0, 3).map((specialty, index) => (
                         <span
                           key={index}
                           className="bg-amber-500/10 text-amber-400 text-xs px-2 py-1 rounded-full border border-amber-500/20 group-hover:bg-amber-500/20 group-hover:border-amber-500/40 transition-all duration-300"
@@ -321,15 +314,14 @@ export default function LawyersPage() {
                           {specialty}
                         </span>
                       ))}
-                      {lawyer.specialties.length > 3 && (
+                      {lawyer.specialties && lawyer.specialties.length > 3 && (
                         <span className="bg-gray-600/50 text-gray-300 text-xs px-2 py-1 rounded-full border border-gray-500/20">
                           +{lawyer.specialties.length - 3}
                         </span>
                       )}
                     </div>
                   </div>
-
-                  {/* Experience & Education */}
+                  {/* Experience & Qualification */}
                   <div className="space-y-2">
                     <div className="flex items-center text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,57 +354,21 @@ export default function LawyersPage() {
                           d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
                         />
                       </svg>
-                      <span className="line-clamp-2">{lawyer.education}</span>
+                      <span className="line-clamp-2">{lawyer.qualification}</span>
                     </div>
                   </div>
-
-                  {/* Đã xóa Languages */}
-
                   {/* Description */}
                   <div>
                     <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3">
                       {lawyer.description}
                     </p>
                   </div>
-
-                  {/* Consultation Fee */}
-                  <div className="bg-gradient-to-r from-gray-700/50 to-gray-600/50 p-4 rounded-xl border border-gray-600 group-hover:border-amber-500/30 transition-all duration-300">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                        Phí tư vấn
-                      </span>
-                      <span className="font-bold text-amber-400 group-hover:text-amber-300 transition-colors duration-300">
-                        {lawyer.consultationFee}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 pt-2">
-                    <button className="flex-1 px-4 py-2 border border-amber-500 text-amber-400 rounded-lg hover:bg-amber-500/10 transition-all duration-300 text-sm font-medium flex items-center justify-center transform hover:scale-105 group-hover:border-amber-400">
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                        />
-                      </svg>
-                      Nhắn tin
-                    </button>
-                    <button className="flex-1">
-                      <div className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-lg transition-all duration-300 text-sm font-medium flex items-center justify-center transform hover:scale-105">
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 011 1v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a1 1 0 011-1h3z"
-                          />
-                        </svg>
-                        Đặt lịch
-                      </div>
-                    </button>
+                  {/* Rating */}
+                  <div className="flex items-center gap-1">
+                    <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span className="text-sm text-yellow-500 font-semibold">{lawyer.rating}</span>
                   </div>
                 </div>
               </div>
