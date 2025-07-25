@@ -1,6 +1,6 @@
 "use client"
-
-import React, { useState } from "react"
+import api from "../../services/api"
+import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Link, useLocation } from "react-router-dom"
 import {
@@ -52,104 +52,29 @@ export default function ManageLawyers() {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
 
-    // Mock data for lawyers
-    const [lawyers, setLawyers] = useState([
-        {
-            id: 1,
-            name: "Luật sư Nguyễn Văn An",
-            email: "nguyenvanan@law.com",
-            phone: "0901234567",
-            avatar: "/placeholder.svg?height=40&width=40",
-            specialization: "Dân sự",
-            experience: 8,
-            rating: 4.8,
-            totalCases: 156,
-            successRate: 92,
-            hourlyRate: 500000,
-            status: "active",
-            location: "TP.HCM",
-            education: "Đại học Luật TP.HCM",
-            license: "LS001234",
-            joinDate: "2020-01-15",
-            lastActive: "2024-01-09 14:30",
-        },
-        {
-            id: 2,
-            name: "Luật sư Trần Thị Bình",
-            email: "tranthibinh@law.com",
-            phone: "0912345678",
-            avatar: "/placeholder.svg?height=40&width=40",
-            specialization: "Hình sự",
-            experience: 12,
-            rating: 4.9,
-            totalCases: 203,
-            successRate: 95,
-            hourlyRate: 750000,
-            status: "active",
-            location: "Hà Nội",
-            education: "Đại học Luật Hà Nội",
-            license: "LS002345",
-            joinDate: "2018-03-20",
-            lastActive: "2024-01-09 16:45",
-        },
-        {
-            id: 3,
-            name: "Luật sư Lê Minh Cường",
-            email: "leminhcuong@law.com",
-            phone: "0923456789",
-            avatar: "/placeholder.svg?height=40&width=40",
-            specialization: "Lao động",
-            experience: 6,
-            rating: 4.6,
-            totalCases: 89,
-            successRate: 88,
-            hourlyRate: 400000,
-            status: "inactive",
-            location: "Đà Nẵng",
-            education: "Đại học Luật Đà Nẵng",
-            license: "LS003456",
-            joinDate: "2021-07-10",
-            lastActive: "2024-01-05 10:20",
-        },
-        {
-            id: 4,
-            name: "Luật sư Phạm Thu Hương",
-            email: "phamthuhuong@law.com",
-            phone: "0934567890",
-            avatar: "/placeholder.svg?height=40&width=40",
-            specialization: "Thương mại",
-            experience: 10,
-            rating: 4.7,
-            totalCases: 178,
-            successRate: 90,
-            hourlyRate: 650000,
-            status: "active",
-            location: "TP.HCM",
-            education: "Đại học Kinh tế - Luật",
-            license: "LS004567",
-            joinDate: "2019-05-12",
-            lastActive: "2024-01-09 11:15",
-        },
-        {
-            id: 5,
-            name: "Luật sư Hoàng Đức Minh",
-            email: "hoangducminh@law.com",
-            phone: "0945678901",
-            avatar: "/placeholder.svg?height=40&width=40",
-            specialization: "Gia đình",
-            experience: 5,
-            rating: 4.5,
-            totalCases: 67,
-            successRate: 85,
-            hourlyRate: 350000,
-            status: "active",
-            location: "Hà Nội",
-            education: "Đại học Luật Hà Nội",
-            license: "LS005678",
-            joinDate: "2022-02-28",
-            lastActive: "2024-01-09 09:30",
-        },
-    ])
+    // API state
+    const [lawyers, setLawyers] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+
+    // Fetch lawyers from API
+    useEffect(() => {
+        const fetchLawyers = async () => {
+            try {
+                setLoading(true)
+                setError(null)
+                const response = await api.get("/api/Lawyer")
+                setLawyers(response.data || [])
+            } catch (err) {
+                console.error("Error fetching lawyers:", err)
+                setError("Không thể tải danh sách luật sư. Vui lòng thử lại.")
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchLawyers()
+    }, [])
 
     // Statistics data
     const stats = [
@@ -220,9 +145,9 @@ export default function ManageLawyers() {
     // Filter and search logic
     const filteredLawyers = lawyers.filter((lawyer) => {
         const matchesSearch =
-            lawyer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            lawyer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            lawyer.specialization.toLowerCase().includes(searchTerm.toLowerCase())
+            lawyer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            lawyer.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            lawyer.specialization?.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesStatus = statusFilter === "all" || lawyer.status === statusFilter
         const matchesSpecialization = specializationFilter === "all" || lawyer.specialization === specializationFilter
 
@@ -289,9 +214,26 @@ export default function ManageLawyers() {
         return icons[specialization] || Scale
     }
 
+    // Show loading state
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+                <div className="text-white text-xl">Đang tải dữ liệu...</div>
+            </div>
+        )
+    }
+
+    // Show error state
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+                <div className="text-red-400 text-xl">{error}</div>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-
             {/* Mobile sidebar overlay */}
             {sidebarOpen && (
                 <div
@@ -464,7 +406,7 @@ export default function ManageLawyers() {
                                 <div className="mt-6 pt-6 border-t border-gray-700">
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div>
-
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Trạng thái</label>
                                             <select
                                                 value={statusFilter}
                                                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -583,7 +525,6 @@ export default function ManageLawyers() {
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                                 Phí/giờ
                                             </th>
-
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                                 Thao tác
                                             </th>
@@ -642,9 +583,8 @@ export default function ManageLawyers() {
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className="text-sm text-white">{lawyer.hourlyRate.toLocaleString("vi-VN")}đ</span>
+                                                        <span className="text-sm text-white">{lawyer.hourlyRate?.toLocaleString("vi-VN")}đ</span>
                                                     </td>
-
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center space-x-2">
                                                             <button
@@ -798,17 +738,17 @@ export default function ManageLawyers() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-300 mb-1">Phí dịch vụ</label>
-                                    <p className="text-white">{selectedLawyer.hourlyRate.toLocaleString("vi-VN")}đ/giờ</p>
+                                    <p className="text-white">{selectedLawyer.hourlyRate?.toLocaleString("vi-VN")}đ/giờ</p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-300 mb-1">Ngày tham gia</label>
-                                        <p className="text-white">{new Date(selectedLawyer.joinDate).toLocaleDateString("vi-VN")}</p>
+                                        <p className="text-white">{selectedLawyer.joinDate ? new Date(selectedLawyer.joinDate).toLocaleDateString("vi-VN") : 'N/A'}</p>
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-300 mb-1">Hoạt động cuối</label>
-                                        <p className="text-white">{selectedLawyer.lastActive}</p>
+                                        <p className="text-white">{selectedLawyer.lastActive || 'N/A'}</p>
                                     </div>
                                 </div>
                             </div>

@@ -1,8 +1,10 @@
 "use client"
-
+import api from  "../../services/api"
 import React, { useState, useEffect } from "react"
+
 import { lawyerService } from "../../services/lawyerService"
 import { useNavigate } from "react-router-dom"
+
 
 export default function LawyersPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -33,15 +35,13 @@ export default function LawyersPage() {
       try {
         setLoading(true)
         setError(null)
-        const [lawyersData, testimonialsData, faqsData] = await Promise.all([
-          lawyerService.getAllLawyers(),
-          lawyerService.getAllTestimonials(),
-          lawyerService.getAllFaqs()
-        ])
-
+        // Fetch lawyers from API
+        const response = await api.get("/api/Lawyer")
+        const lawyersData = response.data || []
         setLawyers(lawyersData)
-        setTestimonials(testimonialsData)
-        setFaqs(faqsData)
+        // Testimonials and faqs can remain as empty arrays or static for now
+        setTestimonials([])
+        setFaqs([])
         setIsVisible(true)
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -50,7 +50,6 @@ export default function LawyersPage() {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [])
 
@@ -74,8 +73,13 @@ export default function LawyersPage() {
   const filteredLawyers = lawyers.filter((lawyer) => {
     const matchesSearch =
       lawyer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+
+      (lawyer.specialties && lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(searchTerm.toLowerCase())))
+    const matchesSpecialty = !selectedSpecialty || (lawyer.specialties && lawyer.specialties.includes(selectedSpecialty))
+
       lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesSpecialty = !selectedSpecialty || lawyer.specialties.includes(selectedSpecialty)
+
     return matchesSearch && matchesSpecialty
   })
 
@@ -298,10 +302,13 @@ export default function LawyersPage() {
                       <h3 className="font-bold text-lg text-white mb-1 group-hover:text-amber-400 transition-colors duration-300">
                         {lawyer.name}
                       </h3>
+
+                      <div className="text-sm text-gray-400">{lawyer.email}</div>
+                      <div className="text-sm text-gray-400">{lawyer.phone}</div>
+
                     </div>
                   </div>
                 </div>
-
                 {/* Card Content */}
                 <div className="px-8 pb-8 space-y-4">
                   {/* Specialties */}
@@ -310,7 +317,7 @@ export default function LawyersPage() {
                       Chuyên môn
                     </h4>
                     <div className="flex flex-wrap gap-1">
-                      {lawyer.specialties.slice(0, 3).map((specialty, index) => (
+                      {lawyer.specialties && lawyer.specialties.slice(0, 3).map((specialty, index) => (
                         <span
                           key={index}
                           className="bg-amber-500/10 text-amber-400 text-xs px-2 py-1 rounded-full border border-amber-500/20 group-hover:bg-amber-500/20 group-hover:border-amber-500/40 transition-all duration-300"
@@ -318,15 +325,14 @@ export default function LawyersPage() {
                           {specialty}
                         </span>
                       ))}
-                      {lawyer.specialties.length > 3 && (
+                      {lawyer.specialties && lawyer.specialties.length > 3 && (
                         <span className="bg-gray-600/50 text-gray-300 text-xs px-2 py-1 rounded-full border border-gray-500/20">
                           +{lawyer.specialties.length - 3}
                         </span>
                       )}
                     </div>
                   </div>
-
-                  {/* Experience & Education */}
+                  {/* Experience & Qualification */}
                   <div className="space-y-2">
                     <div className="flex items-center text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -359,18 +365,23 @@ export default function LawyersPage() {
                           d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
                         />
                       </svg>
-                      <span className="line-clamp-2">{lawyer.education}</span>
+                      <span className="line-clamp-2">{lawyer.qualification}</span>
                     </div>
                   </div>
-
-                  {/* Đã xóa Languages */}
-
                   {/* Description */}
                   <div>
                     <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3">
                       {lawyer.description}
                     </p>
                   </div>
+
+                  {/* Rating */}
+                  <div className="flex items-center gap-1">
+                    <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span className="text-sm text-yellow-500 font-semibold">{lawyer.rating}</span>
+
 
                   {/* Action Buttons */}
                   <div className="flex gap-2 pt-2">
@@ -387,7 +398,7 @@ export default function LawyersPage() {
                         Đặt lịch
                       </div>
                     </button>
-                  </div>
+      </div>
                 </div>
               </div>
             ))}
