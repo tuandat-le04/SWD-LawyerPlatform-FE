@@ -25,15 +25,25 @@ import {
   Monitor,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import FeedbackForm from "../../components/FeedbackForm";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
+  // Giả lập trạng thái đăng nhập, thay bằng context thực tế nếu có
+  const isLoggedIn = Boolean(localStorage.getItem("userToken"));
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const handleLoginClick = () => {
     navigate("/login");
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Navigate to /services with search query as state
+    navigate("/services", { state: { query: searchValue } });
   };
   return (
     <div className="min-h-screen bg-gray-900">
@@ -62,19 +72,23 @@ export default function Home() {
 
               {/* Search Bar */}
               <div className="mb-8">
-                <div className="flex gap-4 p-2 bg-white/10 backdrop-blur-sm rounded-xl border border-gray-700">
-                  <div className="flex-1 flex items-center">
-                    <Search className="h-5 w-5 text-gray-400 ml-3" />
-                    <input
-                      type="text"
-                      placeholder="Tìm kiếm dịch vụ pháp lý..."
-                      className="w-full px-3 py-3 border-0 focus:outline-none bg-transparent text-white placeholder-gray-400"
-                    />
+                <form onSubmit={handleSearch}>
+                  <div className="flex gap-4 p-2 bg-white/10 backdrop-blur-sm rounded-xl border border-gray-700">
+                    <div className="flex-1 flex items-center">
+                      <Search className="h-5 w-5 text-gray-400 ml-3" />
+                      <input
+                        type="text"
+                        value={searchValue}
+                        onChange={e => setSearchValue(e.target.value)}
+                        placeholder="Tìm kiếm dịch vụ pháp lý..."
+                        className="w-full px-3 py-3 border-0 focus:outline-none bg-transparent text-white placeholder-gray-400"
+                      />
+                    </div>
+                    <button type="submit" className="bg-amber-500 text-gray-900 px-8 py-3 rounded-lg hover:bg-amber-600 transition-all duration-300 font-semibold">
+                      Tìm kiếm
+                    </button>
                   </div>
-                  <button className="bg-amber-500 text-gray-900 px-8 py-3 rounded-lg hover:bg-amber-600 transition-all duration-300 font-semibold">
-                    Tìm kiếm
-                  </button>
-                </div>
+                </form>
               </div>
 
               {/* CTA Buttons */}
@@ -89,6 +103,7 @@ export default function Home() {
                   </div>
                 </button>
                 <button
+                  onClick={() => navigate("/legal-forms")}
                   className="border-2 border-amber-500 text-amber-500 bg-transparent px-8 py-4 rounded-xl hover:bg-amber-500 hover:text-gray-900 transition-all duration-300 font-semibold">
                   <div className="flex items-center justify-center space-x-2">
                     <FileText className="h-5 w-5" />
@@ -100,6 +115,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
 
       {/* Services Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900">
@@ -269,27 +285,22 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Newsletter Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-gray-800 to-gray-900">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gray-800/50 rounded-3xl p-12 border border-gray-700">
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Đăng ký email để nhận bản tin và khuyến mãi.
-            </h3>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto mt-8">
-              <input
-                type="email"
-                placeholder="Email"
-                className="flex-1 px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-amber-500"
-              />
-              <button className="bg-amber-500 text-gray-900 px-8 py-3 rounded-lg hover:bg-amber-600 transition-colors font-semibold">
-                Gửi
-              </button>
-            </div>
+      {/* Chỉ cho phép feedback khi đã đăng nhập */}
+      {isLoggedIn ? (
+        <FeedbackForm />
+      ) : (
+        <div className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900">
+          <div className="max-w-xl mx-auto bg-gray-800/70 rounded-2xl p-8 border border-gray-700 text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">Bạn cần đăng nhập để gửi phản hồi!</h3>
+            <button
+              className="bg-amber-500 text-gray-900 px-6 py-3 rounded-xl font-semibold hover:bg-amber-600 transition-all duration-300"
+              onClick={() => navigate("/login")}
+            >
+              Đăng nhập ngay
+            </button>
           </div>
         </div>
-      </section>
+      )}
     </div>
   );
 }

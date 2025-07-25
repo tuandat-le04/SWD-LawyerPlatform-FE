@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowLeft, User, Phone } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import authService from '../../services/auth';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { register, isAuthenticated } = useAuth();
+    
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -18,6 +21,14 @@ export default function Register() {
 
     const [errors, setErrors] = useState({});
     const [submitMessage, setSubmitMessage] = useState('');
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            const from = location.state?.from?.pathname || '/';
+            navigate(from, { replace: true });
+        }
+    }, [isAuthenticated, navigate, location]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -72,35 +83,64 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitMessage('');
+        setErrors({});
 
+        // Validate form
         if (!validateForm()) {
             return;
         }
 
+        setIsLoading(true);
+
         try {
-            setIsLoading(true);
-            setSubmitMessage('');
+            const userData = {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                password: formData.password,
+                confirmPassword: formData.confirmPassword,
+                role: 'Customer' // Default role
+            };
 
-            await authService.register(formData);
-
-            setSubmitMessage('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.');
-
-            // Reset form
-            setFormData({
-                name: '',
-                email: '',
-                phone: '',
-                password: '',
-                confirmPassword: ''
-            });
-
-            // Redirect to login after 2 seconds
-            setTimeout(() => {
-                navigate('/login');
-            }, 2000);
-
+            const result = await register(userData);
+            
+            if (result.success) {
+                setSubmitMessage('Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.');
+                // Redirect to login page after successful registration
+                setTimeout(() => {
+                    navigate('/login', { 
+                        state: { 
+                            message: 'Đăng ký thành công! Vui lòng đăng nhập.',
+                            email: formData.email
+                        } 
+                    });
+                }, 2000);
+            } else {
+                // Handle validation errors from backend
+                if (result.errors && Array.isArray(result.errors)) {
+                    const newErrors = {};
+                    result.errors.forEach(error => {
+                        if (error.includes('Email')) {
+                            newErrors.email = error;
+                        } else if (error.includes('Password') || error.includes('Mật khẩu')) {
+                            newErrors.password = error;
+                        } else if (error.includes('Name') || error.includes('Tên')) {
+                            newErrors.name = error;
+                        } else if (error.includes('Phone') || error.includes('Số điện thoại')) {
+                            newErrors.phone = error;
+                        } else {
+                            setSubmitMessage(error);
+                        }
+                    });
+                    setErrors(newErrors);
+                } else {
+                    setSubmitMessage(result.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+                }
+            }
         } catch (error) {
-            setSubmitMessage(error.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+            console.error('Register error:', error);
+            setSubmitMessage('Có lỗi xảy ra. Vui lòng thử lại.');
         } finally {
             setIsLoading(false);
         }
@@ -142,8 +182,8 @@ export default function Register() {
                         {/* Success/Error Message */}
                         {submitMessage && (
                             <div className={`p-4 rounded-xl text-center ${submitMessage.includes('thành công')
-                                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                    : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                : 'bg-red-500/20 text-red-400 border border-red-500/30'
                                 }`}>
                                 {submitMessage}
                             </div>

@@ -274,29 +274,6 @@ const ManageReports = () => {
                                 <p className="text-gray-400">Theo dõi hiệu suất và phân tích dữ liệu kinh doanh</p>
                             </div>
                         </div>
-
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={() => exportReport('excel')}
-                                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-                            >
-                                <Download className="w-4 h-4" />
-                                <span>Export Excel</span>
-                            </button>
-                            <button
-                                onClick={() => exportReport('pdf')}
-                                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-                            >
-                                <Download className="w-4 h-4" />
-                                <span>Export PDF</span>
-                            </button>
-                            <button
-                                onClick={() => navigate("/login")}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
-                            >
-                                Đăng xuất
-                            </button>
-                        </div>
                     </div>
                 </header>
 

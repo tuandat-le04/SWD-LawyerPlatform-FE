@@ -1,66 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import UserMenu from './UserMenu';
 
 const AuthButton = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [forceUpdate, setForceUpdate] = useState(0); // Force re-render
     const navigate = useNavigate();
+    const { isAuthenticated, loading } = useAuth();
 
-    useEffect(() => {
-        // Kiểm tra trạng thái đăng nhập
-        const checkAuthStatus = () => {
-            const token = localStorage.getItem('accessToken');
-            const authenticated = !!token;
-            console.log('AuthButton - checkAuthStatus:', authenticated);
-            console.log('AuthButton - token in localStorage:', token);
-            console.log('AuthButton - user in localStorage:', localStorage.getItem('user'));
-            setIsAuthenticated(authenticated);
-        };
-
-        // Kiểm tra ngay khi component mount
-        checkAuthStatus();
-
-        // Lắng nghe sự thay đổi localStorage
-        const handleStorageChange = () => {
-            console.log('AuthButton - storage changed');
-            checkAuthStatus();
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        // Tạo custom event để cập nhật khi login thành công
-        const handleLoginSuccess = () => {
-            console.log('AuthButton - loginSuccess event received');
-            // Delay một chút để đảm bảo localStorage đã được cập nhật
-            setTimeout(() => {
-                checkAuthStatus();
-                setForceUpdate(prev => prev + 1); // Force re-render
-            }, 50);
-        };
-
-        window.addEventListener('loginSuccess', handleLoginSuccess);
-
-        // Lắng nghe logout event
-        const handleLogoutSuccess = () => {
-            console.log('AuthButton - logoutSuccess event received');
-            checkAuthStatus();
-        };
-
-        window.addEventListener('logoutSuccess', handleLogoutSuccess);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener('loginSuccess', handleLoginSuccess);
-            window.removeEventListener('logoutSuccess', handleLogoutSuccess);
-        };
-    }, []);
+    if (loading) {
+        return (
+            <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-orange-300 border-t-transparent"></div>
+            </div>
+        );
+    }
 
     const handleLoginClick = () => {
         navigate('/login');
     };
-
-    console.log('AuthButton rendering - isAuthenticated:', isAuthenticated, 'forceUpdate:', forceUpdate);
 
     return (
         <>

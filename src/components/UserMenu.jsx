@@ -1,22 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../services/auth';
+import { useAuth } from '../contexts/AuthContext';
 
 const UserMenu = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [user, setUser] = useState(null);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // Lấy thông tin user từ localStorage
-        const userData = localStorage.getItem('user');
-        console.log('UserMenu - userData from localStorage:', userData);
-        if (userData) {
-            setUser(JSON.parse(userData));
-        }
-    }, []);
+    const { user, logout } = useAuth();
 
     useEffect(() => {
         // Đóng dropdown khi click bên ngoài
@@ -33,7 +24,7 @@ const UserMenu = () => {
     }, []);
 
     const handleLogout = () => {
-        authService.logout();
+        logout();
         setIsOpen(false);
     };
 
@@ -43,7 +34,14 @@ const UserMenu = () => {
     };
 
     const handleSettingsClick = () => {
-        navigate('/settings');
+        // Navigate based on user role
+        if (user?.role === 'Admin') {
+            navigate('/admin/settings');
+        } else if (user?.role === 'Lawyer') {
+            navigate('/lawyer/settings');
+        } else {
+            navigate('/profile'); // Customer profile
+        }
         setIsOpen(false);
     };
 

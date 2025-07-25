@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Scale, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import authService from '../../services/auth'; // Import authService
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginPage() {
-    const [userType, setUserType] = useState('customer');
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(''); // Thêm state để hiển thị lỗi
+    const [errors, setErrors] = useState([]); // Thay đổi để handle multiple errors
     const navigate = useNavigate();
+    const location = useLocation();
+    const { login, isAuthenticated } = useAuth();
 
-    // ...existing code...
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            const from = location.state?.from?.pathname || '/';
+            navigate(from, { replace: true });
+        }
+    }, [isAuthenticated, navigate, location]);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -41,51 +48,33 @@ export default function LoginPage() {
     const handleSubmit = async () => {
         // Validate form
         if (!formData.email || !formData.password) {
-            setError('Vui lòng nhập đầy đủ email và mật khẩu');
+            setErrors(['Vui lòng nhập đầy đủ email và mật khẩu']);
+            return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setErrors(['Vui lòng nhập email hợp lệ']);
             return;
         }
 
         setIsLoading(true);
-        setError(''); // Clear previous errors
+        setErrors([]);
 
         try {
-            console.log('Attempting login with:', formData);
-
-            // Call authService login
-            const result = await authService.login({
-                email: formData.email,
-                password: formData.password
-            });
-
-            console.log('Login result:', result);
-
+            const result = await login(formData.email, formData.password);
+            
             if (result.success) {
-                console.log('Login thành công:', result.message);
-
-                // Trigger custom event để cập nhật AuthButton
-                window.dispatchEvent(new Event('loginSuccess'));
-
-                // Force update localStorage event (vì storage event không trigger trong cùng tab)
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('loginSuccess'));
-                }, 100);
-
-                // Multiple retry để đảm bảo event được trigger
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('loginSuccess'));
-                }, 300);
-
-                // Redirect về trang home
-                console.log('Redirecting to home page...');
-
-                // Delay redirect để đảm bảo event được xử lý
-                setTimeout(() => {
-                    navigate('/');
-                }, 500);
+                // Navigate based on user role or to intended location
+                const from = location.state?.from?.pathname || '/';
+                navigate(from, { replace: true });
+            } else {
+                setErrors(result.errors || ['Đăng nhập thất bại']);
             }
         } catch (error) {
-            console.error('Login failed:', error);
-            setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+            console.error('Login error:', error);
+            setErrors(['Có lỗi xảy ra. Vui lòng thử lại.']);
         } finally {
             setIsLoading(false);
         }
@@ -112,10 +101,12 @@ export default function LoginPage() {
 
                     {/* Login Form */}
                     <div className="space-y-6">
-                        {/* Error Message */}
-                        {error && (
+                        {/* Error Messages */}
+                        {errors.length > 0 && (
                             <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl">
-                                <p className="text-sm">{error}</p>
+                                {errors.map((error, index) => (
+                                    <p key={index} className="text-sm">{error}</p>
+                                ))}
                             </div>
                         )}
                         {/* Email Field */}

@@ -1,7 +1,10 @@
 "use client"
 import api from  "../../services/api"
 import React, { useState, useEffect } from "react"
-// Remove: import { lawyerService } from "../../services/lawyerService"
+
+import { lawyerService } from "../../services/lawyerService"
+import { useNavigate } from "react-router-dom"
+
 
 export default function LawyersPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -14,6 +17,7 @@ export default function LawyersPage() {
   const [faqs, setFaqs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
   // Static specialties list
   const specialties = [
@@ -21,8 +25,8 @@ export default function LawyersPage() {
     "Luật bất động sản",
     "Luật hình sự",
     "Luật lao động",
-    "Luật hôn nhân & gia đình",
-    "Luật tài chính & ngân hàng",
+    "Luật hôn nhân và gia đình",
+    "Luật tài chính và ngân hàng",
     "Luật hành chính"
   ]
 
@@ -69,8 +73,13 @@ export default function LawyersPage() {
   const filteredLawyers = lawyers.filter((lawyer) => {
     const matchesSearch =
       lawyer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+
       (lawyer.specialties && lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(searchTerm.toLowerCase())))
     const matchesSpecialty = !selectedSpecialty || (lawyer.specialties && lawyer.specialties.includes(selectedSpecialty))
+
+      lawyer.specialties.some((specialty) => specialty.toLowerCase().includes(searchTerm.toLowerCase()))
+    const matchesSpecialty = !selectedSpecialty || lawyer.specialties.includes(selectedSpecialty)
+
     return matchesSearch && matchesSpecialty
   })
 
@@ -166,12 +175,12 @@ export default function LawyersPage() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="group">
+            <button onClick={() => navigate('/appointment')} className="group">
               <div className="bg-amber-500 hover:bg-amber-600 text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform group-hover:scale-105">
                 Tư vấn ngay
               </div>
             </button>
-            <button className="border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105">
+            <button onClick={() => navigate('/services')} className="border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105">
               Xem thêm dịch vụ
             </button>
           </div>
@@ -272,7 +281,7 @@ export default function LawyersPage() {
                   <div className="flex items-start space-x-4">
                     <div className="relative">
                       <img
-                        src={lawyer.avatar || "/placeholder.svg"}
+                        src="../public/images/avatar.png"
                         alt={lawyer.name}
                         className="relative w-20 h-20 rounded-full object-cover border-2 border-amber-500/30 group-hover:border-amber-500/70 transition-all duration-300 group-hover:scale-110"
                       />
@@ -293,8 +302,10 @@ export default function LawyersPage() {
                       <h3 className="font-bold text-lg text-white mb-1 group-hover:text-amber-400 transition-colors duration-300">
                         {lawyer.name}
                       </h3>
+
                       <div className="text-sm text-gray-400">{lawyer.email}</div>
                       <div className="text-sm text-gray-400">{lawyer.phone}</div>
+
                     </div>
                   </div>
                 </div>
@@ -363,13 +374,31 @@ export default function LawyersPage() {
                       {lawyer.description}
                     </p>
                   </div>
+
                   {/* Rating */}
                   <div className="flex items-center gap-1">
                     <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
                     <span className="text-sm text-yellow-500 font-semibold">{lawyer.rating}</span>
-                  </div>
+
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-2">
+                    <button onClick={() => navigate('/appointment')} className="flex-1">
+                      <div className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-gray-900 rounded-lg transition-all duration-300 text-sm font-medium flex items-center justify-center transform hover:scale-105">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h3a1 1 0 011 1v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a1 1 0 011-1h3z"
+                          />
+                        </svg>
+                        Đặt lịch
+                      </div>
+                    </button>
+      </div>
                 </div>
               </div>
             ))}
@@ -406,7 +435,7 @@ export default function LawyersPage() {
             <div className="relative bg-gray-800 rounded-3xl p-8 border border-gray-700 shadow-2xl">
               <div className="text-center">
                 <img
-                  src={testimonials[currentTestimonial].avatar || "/placeholder.svg"}
+                  src="../public/images/avatar.png"
                   alt={testimonials[currentTestimonial].name}
                   className="w-16 h-16 rounded-full mx-auto mb-4 border-2 border-amber-500"
                 />
@@ -474,28 +503,6 @@ export default function LawyersPage() {
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="relative py-16 bg-gradient-to-r from-gray-800 to-gray-900">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-yellow-500/10"></div>
-        <div className="relative container mx-auto px-4 text-center">
-          <h3 className="text-4xl font-bold text-white mb-6">Sẵn sàng nhận tư vấn pháp lý?</h3>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Đừng để vấn đề pháp lý trở thành gánh nặng. Hãy để chúng tôi hỗ trợ bạn ngay hôm nay.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="group">
-              <div className="bg-amber-500 hover:bg-amber-600 text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform group-hover:scale-105">
-                Liên hệ ngay
-              </div>
-            </button>
-            <button className="border-2 border-amber-500 text-amber-400 hover:bg-amber-500 hover:text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105">
-              Gọi hotline: 1900-xxxx
-            </button>
-          </div>
-        </div>
-      </section>
-
 
       {/* Scroll to top button */}
       <button
